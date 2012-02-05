@@ -19,6 +19,14 @@ void Analyzer::Init(Handle<Object> target) {
     target->Set(String::NewSymbol("Analyzer"), constructor);
 }
 
+Analyzer::Analyzer() :
+    isModelLoaded(false) {
+}
+
+Analyzer::~Analyzer() {
+    delete kytea;
+}
+
 Handle<Value> Analyzer::New(const Arguments& args) {
     HandleScope scope;
 
@@ -89,6 +97,7 @@ void Analyzer::Work_AfterReadModel(uv_work_t* req) {
         Local < Value > exception = Exception::Error(v8::String::New(msg.c_str()));
         argv[0] = exception;
     } else {
+        kt->isModelLoaded = true;
         argv[0] = Local<Value>::New(Null());
     }
 
@@ -105,8 +114,12 @@ Handle<Value> Analyzer::Analyze(const Arguments& args) {
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
     Analyzer* kt = Unwrap<Analyzer> (args.This());
-    AnalyzeBaton* baton = new AnalyzeBaton(kt, cb, sentence);
-    int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Analyze, Work_AfterAnalyze);
+    if (kt->isModelLoaded) {
+        AnalyzeBaton* baton = new AnalyzeBaton(kt, cb, sentence);
+        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Analyze, Work_AfterAnalyze);
+    }else{
+        ThrowException(Exception::Error(v8::String::New("Model in not loaded")));
+    }
     return args.This();
 }
 

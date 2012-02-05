@@ -10,6 +10,10 @@ namespace node_kytea {
 
 class Analyzer: node::ObjectWrap {
 public:
+    Analyzer();
+    ~Analyzer();
+
+
     static void Init(v8::Handle<v8::Object> target);
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
     static v8::Handle<v8::Value> Analyze(const v8::Arguments& args);
@@ -56,8 +60,7 @@ public:
 
 private:
     kytea::Kytea* kytea;
-    char in_format;
-    char out_format;
+    bool isModelLoaded;
 
     static void ParseConfig(v8::Handle<v8::Object> opt, kytea::KyteaConfig *config);
     static void Work_ReadModel(uv_work_t* req);
