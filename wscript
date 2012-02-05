@@ -15,4 +15,4 @@ def configure(conf):
 def build(bld):
     obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
     obj.target = 'kytea'
-    obj.source = './src/node_kytea.cc'
+    obj.source = './src/node_kytea.cc ./src/analyzer.cc'

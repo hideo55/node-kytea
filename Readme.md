@@ -3,23 +3,45 @@
 
   Node binding of KyTea.
 
+# What is KyTea?
+
+See [KyTea](http://www.phontron.com/kytea/index-ja.html)
+
 ## Usage
 
     var KyTea = require('kytea').KyTea;
-    var kytea = new KyTea({ "debug": false });
     var path = '/path/to/model';
-    kytea.readModel(path,function(err){
+    var kt = new KyTea(path, { tagmax: 3 }, function(err){
       if(err) throw err;
       kytea.analyze("...", function(err,obj){
-        var tag = obj[0][0].tag;
+        for(var i =0; i< obj.length;i++){
+          var word = obj[i].word;
+          var tags = obj[i].tags;
+        }
       });
     });
 
 ## Methods
+	
+### new KyTea(modelPath, options, callback)
 
-    readModel(path,cb);
-    
-    analyze(str, cb);
+returns new KyTea object and read model.
+
+*`modelPath`: filepath of model
+
+*`options`*(optional)*: analyze options 
+  *`tagmax`: Maximum number of tag.(Integer)
+  *`deftag`: Default tag string.(String)
+
+*`callback`: This function will be called when model was opened.
+
+### analyze(text, callback)
+
+Analyzing string.
+
+*`text`: analysis target
+
+*`callback`: This function will be called when text analysis is completed.
 
 ## License 
 
