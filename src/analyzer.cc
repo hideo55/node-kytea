@@ -11,9 +11,11 @@ void Analyzer::Init(Handle<Object> target) {
     HandleScope scope;
     Local < FunctionTemplate > t = FunctionTemplate::New(New);
     t->SetClassName(String::NewSymbol("Analyzer"));
-    t->InstanceTemplate()->SetInternalFieldCount(1);
+    t->InstanceTemplate()->SetInternalFieldCount(3);
 
-    NODE_SET_PROTOTYPE_METHOD(t, "analyze", Analyze);
+    NODE_SET_PROTOTYPE_METHOD(t, "getWS", getWS);
+    NODE_SET_PROTOTYPE_METHOD(t, "getTags", getTags);
+    NODE_SET_PROTOTYPE_METHOD(t, "getAllTags", getAllTags);
 
     Persistent < Function > constructor = Persistent<Function>::New(t->GetFunction());
     target->Set(String::NewSymbol("Analyzer"), constructor);
@@ -60,7 +62,7 @@ Handle<Value> Analyzer::New(const Arguments& args) {
 
     obj->Wrap(args.This());
 
-    ModelIoBaton* baton = new ModelIoBaton(obj, cb, filename);
+    ReadBaton* baton = new ReadBaton(obj, cb, filename);
     int status = uv_queue_work(uv_default_loop(), &baton->request, Work_ReadModel, Work_AfterReadModel);
 
     return args.This();
@@ -76,7 +78,7 @@ void Analyzer::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
 }
 
 void Analyzer::Work_ReadModel(uv_work_t* req) {
-    ModelIoBaton* baton = static_cast<ModelIoBaton*> (req->data);
+    ReadBaton* baton = static_cast<ReadBaton*> (req->data);
     Analyzer* kt = baton->kt;
     try {
         kt->kytea->readModel(baton->filename.c_str());
@@ -88,7 +90,7 @@ void Analyzer::Work_ReadModel(uv_work_t* req) {
 
 void Analyzer::Work_AfterReadModel(uv_work_t* req) {
     HandleScope scope;
-    ModelIoBaton* baton = static_cast<ModelIoBaton*> (req->data);
+    ReadBaton* baton = static_cast<ReadBaton*> (req->data);
     Analyzer* kt = baton->kt;
     std::string msg = baton->message;
 
@@ -108,23 +110,99 @@ void Analyzer::Work_AfterReadModel(uv_work_t* req) {
     delete baton;
 }
 
-Handle<Value> Analyzer::Analyze(const Arguments& args) {
+Handle<Value> Analyzer::getWS(const Arguments& args) {
     HandleScope scope;
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
     Analyzer* kt = Unwrap<Analyzer> (args.This());
     if (kt->isModelLoaded) {
-        AnalyzeBaton* baton = new AnalyzeBaton(kt, cb, sentence);
-        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Analyze, Work_AfterAnalyze);
-    }else{
+        WsBaton* baton = new WsBaton(kt, cb, sentence);
+        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_WS, Work_AfterWS);
+    } else {
         ThrowException(Exception::Error(v8::String::New("Model in not loaded")));
     }
     return args.This();
 }
 
-void Analyzer::Work_Analyze(uv_work_t* req) {
-    AnalyzeBaton* baton = static_cast<AnalyzeBaton*> (req->data);
+void Analyzer::Work_WS(uv_work_t* req) {
+    WsBaton* baton = static_cast<WsBaton*> (req->data);
+    Analyzer* kt = baton->kt;
+    try {
+        StringUtil* util = kt->kytea->getStringUtil();
+        KyteaConfig* config = kt->kytea->getConfig();
+        KyteaSentence sentence(util->mapString(baton->sentence));
+        kt->kytea->calculateWS(sentence);
+        baton->words = sentence.words;
+    } catch (std::exception &e) {
+        baton->status = ST_FAIL;
+        baton->message = e.what();
+    }
+}
+
+void Analyzer::Work_AfterWS(uv_work_t* req) {
+    HandleScope scope;
+    WsBaton* baton = static_cast<WsBaton*> (req->data);
+    Analyzer* kt = baton->kt;
+    std::string msg = baton->message;
+
+    Local < Value > argv[2];
+    if (baton->status != ST_OK) {
+        Local < Value > exception = Exception::Error(v8::String::New(msg.c_str()));
+        argv[0] = exception;
+    } else {
+        argv[0] = Local<Value>::New(Null());
+        KyteaSentence::Words words = baton->words;
+        int word_num = words.size();
+        Local < Array > res(Array::New(word_num));
+        StringUtil* util = kt->kytea->getStringUtil();
+        for (int i = 0; i < word_num; i++) {
+            kytea::KyteaWord& w = words[i];
+            std::string surf = util->showString(w.surf);
+            res->Set(Integer::New(i), String::New(surf.c_str(), surf.size()));
+        }
+        argv[1] = res;
+    }
+
+    if (!baton->callback.IsEmpty() && baton->callback->IsFunction()) {
+        TRY_CATCH_CALL(kt->handle_, baton->callback, 2, argv);
+    }
+
+    delete baton;
+}
+
+Handle<Value> Analyzer::getTags(const Arguments& args) {
+    HandleScope scope;
+    REQ_STR_ARG(0);
+    std::string sentence = *String::Utf8Value(args[0]->ToString());
+    REQ_FUN_ARG(1, cb);
+    Analyzer* kt = Unwrap<Analyzer> (args.This());
+    if (kt->isModelLoaded) {
+        TagsBaton* baton = new TagsBaton(kt, cb, sentence);
+        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
+    } else {
+        ThrowException(Exception::Error(v8::String::New("Model in not loaded")));
+    }
+    return args.This();
+}
+
+Handle<Value> Analyzer::getAllTags(const Arguments& args) {
+    HandleScope scope;
+    REQ_STR_ARG(0);
+    std::string sentence = *String::Utf8Value(args[0]->ToString());
+    REQ_FUN_ARG(1, cb);
+    Analyzer* kt = Unwrap<Analyzer> (args.This());
+    if (kt->isModelLoaded) {
+        TagsBaton* baton = new TagsBaton(kt, cb, sentence, true);
+        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
+    } else {
+        ThrowException(Exception::Error(v8::String::New("Model in not loaded")));
+    }
+    return args.This();
+}
+
+void Analyzer::Work_Tags(uv_work_t* req) {
+    TagsBaton* baton = static_cast<TagsBaton*> (req->data);
     Analyzer* kt = baton->kt;
     try {
         StringUtil* util = kt->kytea->getStringUtil();
@@ -142,9 +220,9 @@ void Analyzer::Work_Analyze(uv_work_t* req) {
     }
 }
 
-void Analyzer::Work_AfterAnalyze(uv_work_t* req) {
+void Analyzer::Work_AfterTags(uv_work_t* req) {
     HandleScope scope;
-    AnalyzeBaton* baton = static_cast<AnalyzeBaton*> (req->data);
+    TagsBaton* baton = static_cast<TagsBaton*> (req->data);
     Analyzer* kt = baton->kt;
     std::string msg = baton->message;
 
@@ -158,6 +236,11 @@ void Analyzer::Work_AfterAnalyze(uv_work_t* req) {
         int word_num = words.size();
         Local < Array > res(Array::New(word_num));
         StringUtil* util = kt->kytea->getStringUtil();
+
+        std::string keyname[2];
+        keyname[0] = "pos";
+        keyname[1] = "pron";
+
         for (int i = 0; i < word_num; i++) {
             kytea::KyteaWord& w = words[i];
             std::string surf = util->showString(w.surf);
@@ -165,11 +248,15 @@ void Analyzer::Work_AfterAnalyze(uv_work_t* req) {
             elm->Set(String::New("word"), String::New(surf.c_str(), surf.size()));
 
             int tags_size = w.getNumTags();
-            Local < Array > word_tags(Array::New(tags_size));
+            //Local < Array > word_tags(Array::New(tags_size));
+            //Local < Object > word_tags(Object::New());
 
             for (int j = 0; j < tags_size; j++) {
                 const std::vector<KyteaTag>& tags = w.getTags(j);
                 int tag_size = tags.size();
+                if (!baton->all) {
+                    tag_size = 1;
+                }
                 Local < Array > tag_set(Array::New(tag_size));
                 for (int k = 0; k < tag_size; k++) {
                     Local < Array > tag(Array::New(2));
@@ -178,10 +265,11 @@ void Analyzer::Work_AfterAnalyze(uv_work_t* req) {
                     tag->Set(Integer::New(1), Number::New(tags[k].second));
                     tag_set->Set(Integer::New(k), tag);
                 }
-                word_tags->Set(Integer::New(j), tag_set);
+                //word_tags->Set(Integer::New(j), tag_set);
+                elm->Set(String::New(keyname[j].c_str()), tag_set);
             }
 
-            elm->Set(String::New("tags"), word_tags);
+            //elm->Set(String::New("tags"), word_tags);
             res->Set(Integer::New(i), elm);
         }
 
