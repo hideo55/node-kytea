@@ -1,11 +1,11 @@
 
 # node-kytea
 
-  Node binding of KyTea.
+  node-kytea は Kytea を Node.js から利用するための C++ Addon です。
 
 # What is KyTea?
 
-See [KyTea](http://www.phontron.com/kytea/index-ja.html)
+See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 
 ## Usage
 
@@ -13,10 +13,11 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html)
     var path = '/path/to/model';
     var kt = new KyTea(path, { tagmax: 3 }, function(err){
       if(err) throw err;
-      kytea.analyze("...", function(err,obj){
+      kytea.getAllTags("...", function(err,obj){
         for(var i =0; i< obj.length;i++){
           var word = obj[i].word;
-          var tags = obj[i].tags;
+          var pos = obj[i].pos;
+          var pron = obj[i].pron;
         }
       });
     });
@@ -25,23 +26,63 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html)
 	
 ### new KyTea(modelPath, options, callback)
 
-returns new KyTea object and read model.
+`modelPath`で指定されたモデルを読み込み、KyTeaのオブジェクトを作成します。
 
-*`modelPath`: filepath of model
+*`modelPath`: モデルのファイルパス
 
-*`options`*(optional)*: analyze options 
-  *`tagmax`: Maximum number of tag.(Integer)
-  *`deftag`: Default tag string.(String)
+*`options`*(optional)*: 解析オプションです。現在、以下のオプションをサポートしています。
+  *`tagmax`: 1単語あたりのタグの最大数.(Integer)
+  *`deftag`: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(String)
 
-*`callback`: This function will be called when model was opened.
+*`callback`: モデルの読み込みが完了した時点でこの関数が呼ばれます。
 
-### analyze(text, callback)
+### getWS(text, callback)
 
-Analyzing string.
+単語分割を実行します。
 
-*`text`: analysis target
+*`text`: 単語分割対象の文字列
 
-*`callback`: This function will be called when text analysis is completed.
+*`callback`: 単語分割処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、分割された単語が格納された配列です。
+
+例：
+
+    kytea.getWS('',function(err,res){
+    	...
+    });
+
+### getTags(text, callback)
+### getAllTags(text, callback)
+
+タグ推定(品詞、読み)を実行します。getTags()の場合はタグが複数ある場合は信頼度が最も高い1つのみを取得し、getAllTags()の場合は全てのタグを取得します。
+
+*`text`: タグ推定対象の文字列
+
+*`callback`: タグ推定処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、タグ推定結果が格納された配列です。配列の各要素の構造は以下のようになっています。
+
+    [
+    	{
+    		word: '私', // 単語表記
+    		pos: [ //品詞
+    			['代名詞', 3.6951145482572487],//タグと信頼度
+    			['名詞', 3.7467785662991857]
+    		],
+    		pron: [ //読み
+    			['わたし', 2.3796118434353652],
+    			['わたくし', -0.2574841759018055]
+    		]
+    	}
+    ]
+
+例：
+
+    kytea.getTags('',function(err,res){
+      for(var i = 0; i < res.length; i++){
+      	var word = res[i].word;//単語表記
+      	var pos = res[i].pos;  //品詞タグ
+      	var pron = res[i].pron;//読みタグ
+      	...
+      }
+    });
 
 ## License 
 
