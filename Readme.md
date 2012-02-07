@@ -61,7 +61,7 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 
     [
     	{
-    		word: '私', // 単語表記
+    		surf: '私', // 単語表記
     		pos: [ //品詞
     			['代名詞', 3.6951145482572487],//タグと信頼度
     			['名詞', 3.7467785662991857]
