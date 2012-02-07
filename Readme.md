@@ -86,9 +86,10 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 
 ## Install
 
-Make sure you have the sources for `kytea` installed.
+node-kytea は現在、KyTea 0.4.0 での動作を確認しています。
+インストールの前に、[こちら](http://www.phontron.com/kytea/index-ja.html)から KyTea 0.4.0 をダウンロードして、インストールしてください。
 
-To obtain and build the bindings:
+KyTea のヘッダ及びライブラのパスがインクルードパス、ライブラリパスに含まれるようにしたうえで、以下のコマンドを実行してください。
 
     git clone git://github.com/hideo55/node-kytea.git
     cd node-kytea
