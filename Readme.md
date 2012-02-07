@@ -84,6 +84,16 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
       }
     });
 
+## Install
+
+Make sure you have the sources for `kytea` installed.
+
+To obtain and build the bindings:
+
+    git clone git://github.com/hideo55/node-kytea.git
+    cd node-kytea
+    node-waf configure build
+
 ## License 
 
 (The MIT License)
