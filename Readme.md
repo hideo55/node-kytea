@@ -46,7 +46,7 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 
 例：
 
-    kytea.getWS('',function(err,res){
+    kytea.getWS('',function(err,words){
     	...
     });
 
@@ -75,11 +75,11 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 
 例：
 
-    kytea.getTags('',function(err,res){
-      for(var i = 0; i < res.length; i++){
-      	var word = res[i].word;//単語表記
-      	var pos = res[i].pos;  //品詞タグ
-      	var pron = res[i].pron;//読みタグ
+    kytea.getTags('',function(err,words){
+      for(var i = 0; i < words.length; i++){
+      	var word = words[i].surf;//単語表記
+      	var pos = words[i].pos[0];  //品詞タグ
+      	var pron = words[i].pron[0];//読みタグ
       	...
       }
     });

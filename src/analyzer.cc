@@ -245,7 +245,7 @@ void Analyzer::Work_AfterTags(uv_work_t* req) {
             kytea::KyteaWord& w = words[i];
             std::string surf = util->showString(w.surf);
             Local < Object > elm = Object::New();
-            elm->Set(String::New("word"), String::New(surf.c_str(), surf.size()));
+            elm->Set(String::New("surf"), String::New(surf.c_str(), surf.size()));
 
             int tags_size = w.getNumTags();
             //Local < Array > word_tags(Array::New(tags_size));
