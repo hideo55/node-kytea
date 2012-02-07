@@ -237,9 +237,7 @@ void Analyzer::Work_AfterTags(uv_work_t* req) {
         Local < Array > res(Array::New(word_num));
         StringUtil* util = kt->kytea->getStringUtil();
 
-        std::string keyname[2];
-        keyname[0] = "pos";
-        keyname[1] = "pron";
+        std::string keyname[2] = {"pos","pron"};
 
         for (int i = 0; i < word_num; i++) {
             kytea::KyteaWord& w = words[i];
@@ -248,8 +246,6 @@ void Analyzer::Work_AfterTags(uv_work_t* req) {
             elm->Set(String::New("surf"), String::New(surf.c_str(), surf.size()));
 
             int tags_size = w.getNumTags();
-            //Local < Array > word_tags(Array::New(tags_size));
-            //Local < Object > word_tags(Object::New());
 
             for (int j = 0; j < tags_size; j++) {
                 const std::vector<KyteaTag>& tags = w.getTags(j);
@@ -265,11 +261,8 @@ void Analyzer::Work_AfterTags(uv_work_t* req) {
                     tag->Set(Integer::New(1), Number::New(tags[k].second));
                     tag_set->Set(Integer::New(k), tag);
                 }
-                //word_tags->Set(Integer::New(j), tag_set);
                 elm->Set(String::New(keyname[j].c_str()), tag_set);
             }
-
-            //elm->Set(String::New("tags"), word_tags);
             res->Set(Integer::New(i), elm);
         }
 
