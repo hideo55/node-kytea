@@ -16,12 +16,13 @@
 
 #define REQ_OBJ_ARG(I) REQ_ARG_COUNT_AND_TYPE(I, Object)
 
-#define CHK_OPT_BOOL(CONFVAR, CONFNAME, OPTVAR, OPTNAME) \
+#define CHK_OPT_BOOL(CONFVAR, CONFNAME, OPTVAR, OPTNAME, REVERSE) \
     if( OPTVAR->Has(String::New(OPTNAME)) ){ \
         Local<Value> _tmpval = OPTVAR->Get(String::New(OPTNAME)); \
         if(_tmpval->IsBoolean()){ \
             bool _tmp = _tmpval->ToBoolean()->Value(); \
-            CONFVAR->CONFNAME(_tmpval); \
+            if(REVERSE) _tmp = !(_tmp); \
+            CONFVAR->CONFNAME(_tmp); \
         }else{ \
             ThrowException(Exception::TypeError(String::New("Option " #OPTNAME " must be a Boolean"))); \
         } \

@@ -55,7 +55,7 @@ Handle<Value> Analyzer::New(const Arguments& args) {
         ThrowException(Exception::RangeError(String::New("Invalid Argument")));
     }
     config->setOnTraining(false);
-    config->setDoWS(true);
+
     config->setDoTags(true);
     for (int i = 0; i < config->getNumTags(); i++)
         config->setDoTag(i, true);
@@ -75,6 +75,23 @@ void Analyzer::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
     }
     CHK_OPT_INT(config, setTagMax, opt, "tagmax");
     CHK_OPT_STR(config, setDefaultTag, opt, "deftag");
+    CHK_OPT_BOOL(config, setDoUnk, opt, "nounk", true);
+    CHK_OPT_INT(config, setUnkBeam, opt, "unkbeam");
+    CHK_OPT_STR(config, setUnkTag, opt, "unktag");
+
+    if (opt->Has(String::New("notag"))) {
+        Local < Value > _tmpval = opt->Get(String::New("notag"));
+        if (_tmpval->IsUint32()) {
+            unsigned int _tmp = _tmpval->ToUint32()->Value();
+            if (_tmp < 1)
+                ThrowException(
+                        Exception::TypeError(String::New("Illegal setting for \"notag\" (must be 1 or greater)")));
+            config->setDoTag(_tmp - 1, false);
+            std::cout << _tmp << std::endl;
+        } else {
+            ThrowException(Exception::TypeError(String::New("Option \"notag\" must be a Integer")));
+        }
+    }
 }
 
 void Analyzer::Work_ReadModel(uv_work_t* req) {
@@ -117,6 +134,8 @@ Handle<Value> Analyzer::getWS(const Arguments& args) {
     REQ_FUN_ARG(1, cb);
     Analyzer* kt = Unwrap<Analyzer> (args.This());
     if (kt->isModelLoaded) {
+        kytea::KyteaConfig* config = kt->kytea->getConfig();
+        config->setDoWS(true);
         WsBaton* baton = new WsBaton(kt, cb, sentence);
         int status = uv_queue_work(uv_default_loop(), &baton->request, Work_WS, Work_AfterWS);
     } else {
@@ -178,6 +197,9 @@ Handle<Value> Analyzer::getTags(const Arguments& args) {
     REQ_FUN_ARG(1, cb);
     Analyzer* kt = Unwrap<Analyzer> (args.This());
     if (kt->isModelLoaded) {
+        kytea::KyteaConfig* config = kt->kytea->getConfig();
+        config->setDoWS(true);
+        config->setDoTags(true);
         TagsBaton* baton = new TagsBaton(kt, cb, sentence);
         int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
     } else {
@@ -210,8 +232,10 @@ void Analyzer::Work_Tags(uv_work_t* req) {
         KyteaSentence sentence(util->mapString(baton->sentence));
         kt->kytea->calculateWS(sentence);
 
-        for (int i = 0; i < config->getNumTags(); i++)
-            kt->kytea->calculateTags(sentence, i);
+        for (int i = 0; i < config->getNumTags(); i++) {
+            if (config->getDoTag(i))
+                kt->kytea->calculateTags(sentence, i);
+        }
 
         baton->words = sentence.words;
     } catch (std::exception &e) {
@@ -237,8 +261,6 @@ void Analyzer::Work_AfterTags(uv_work_t* req) {
         Local < Array > res(Array::New(word_num));
         StringUtil* util = kt->kytea->getStringUtil();
 
-        std::string keyname[2] = {"pos","pron"};
-
         for (int i = 0; i < word_num; i++) {
             kytea::KyteaWord& w = words[i];
             std::string surf = util->showString(w.surf);
@@ -246,6 +268,7 @@ void Analyzer::Work_AfterTags(uv_work_t* req) {
             elm->Set(String::New("surf"), String::New(surf.c_str(), surf.size()));
 
             int tags_size = w.getNumTags();
+            Local < Array > elm_tags = Array::New(tags_size);
 
             for (int j = 0; j < tags_size; j++) {
                 const std::vector<KyteaTag>& tags = w.getTags(j);
@@ -261,8 +284,9 @@ void Analyzer::Work_AfterTags(uv_work_t* req) {
                     tag->Set(Integer::New(1), Number::New(tags[k].second));
                     tag_set->Set(Integer::New(k), tag);
                 }
-                elm->Set(String::New(keyname[j].c_str()), tag_set);
+                elm_tags->Set(Integer::New(j), tag_set);
             }
+            elm->Set(String::New("tags"), elm_tags);
             res->Set(Integer::New(i), elm);
         }
 

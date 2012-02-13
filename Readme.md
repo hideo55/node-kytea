@@ -15,9 +15,9 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
       if(err) throw err;
       kytea.getAllTags("...", function(err,obj){
         for(var i =0; i< obj.length;i++){
-          var word = obj[i].word;
-          var pos = obj[i].pos;
-          var pron = obj[i].pron;
+          var word = obj[i].surf;
+          var pos = obj[i].tags[0];
+          var pron = obj[i].tags[1];
         }
       });
     });
@@ -30,8 +30,12 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 
 * `modelPath`: モデルのファイルパス
 * `options`*(optional)*: 解析オプションです。現在、以下のオプションをサポートしています。
-  *  `tagmax`: 1単語あたりのタグの最大数.(Integer) 
-  *  `deftag`: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(String)
+  * `notag`: n個目のタグを推定しない。
+  * `nounk`: 未知語の読み推定を行わない。(Default: false)
+  * `tagmax`: 1単語あたりのタグの最大数。(Default: 3) 
+  * `deftag`: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(Default: 'UNK')
+  * `unkbeam`: 未知語の読み推定で利用するビーム幅。(Default: 50)
+  * `unktag`: 辞書に存在しない単語に付与されるタグ。(Default: '')
 * `callback`: モデルの読み込みが完了した時点でこの関数が呼ばれます。
 
 ### getWS(text, callback)
@@ -58,27 +62,17 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
     [
     	{
     		surf: '私', // 単語表記
-    		pos: [ //品詞
-    			['代名詞', 3.6951145482572487],//タグと信頼度
-    			['名詞', 3.7467785662991857]
-    		],
-    		pron: [ //読み
-    			['わたし', 2.3796118434353652],
-    			['わたくし', -0.2574841759018055]
+    		tags:[[ //品詞
+    			  ['代名詞', 3.6951145482572487],//タグと信頼度
+    			  ['名詞', 3.7467785662991857]
+    		  ],
+    		  [ //読み
+    			  ['わたし', 2.3796118434353652],
+    			  ['わたくし', -0.2574841759018055]
+    		  ]
     		]
     	}
     ]
-
-例：
-
-    kytea.getTags('',function(err,words){
-      for(var i = 0; i < words.length; i++){
-      	var word = words[i].surf;//単語表記
-      	var pos = words[i].pos[0];  //品詞タグ
-      	var pron = words[i].pron[0];//読みタグ
-      	...
-      }
-    });
 
 ## Install
 
