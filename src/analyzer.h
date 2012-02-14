@@ -1,3 +1,5 @@
+#ifndef NODE_KYTEA_ANALYZER_H_
+#define NODE_KYTEA_ANALYZER_H_
 #define BUILDING_NODE_EXTENSION
 #include <v8.h>
 #include <node.h>
@@ -80,3 +82,5 @@ private:
 };
 
 }
+
+#endif
