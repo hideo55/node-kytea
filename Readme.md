@@ -9,18 +9,20 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 
 ## Usage
 
-    var KyTea = require('kytea').KyTea;
-    var path = '/path/to/model';
-    var kt = new KyTea(path, { tagmax: 3 }, function(err){
-      if(err) throw err;
-      kytea.getAllTags("...", function(err,obj){
-        for(var i =0; i< obj.length;i++){
-          var word = obj[i].surf;
-          var pos = obj[i].tags[0];
-          var pron = obj[i].tags[1];
-        }
-      });
-    });
+```javascript
+var KyTea = require('kytea').KyTea;
+var path = '/path/to/model';
+var kt = new KyTea(path, { tagmax: 3 }, function(err){
+  if(err) throw err;
+  kytea.getAllTags("...", function(err,obj){
+    for(var i =0; i< obj.length;i++){
+      var word = obj[i].surf;
+      var pos = obj[i].tags[0];
+      var pron = obj[i].tags[1];
+    }
+  });
+});
+```
 
 ## Methods
 	
@@ -46,10 +48,11 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 * `callback`: 単語分割処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、分割された単語が格納された配列です。
 
 例：
-
-    kytea.getWS('',function(err,words){
-    	...
-    });
+```javascript
+kytea.getWS('',function(err,words){
+  ...
+});
+```
 
 ### getTags(text, callback)
 ### getAllTags(text, callback)
@@ -59,21 +62,23 @@ See [KyTea](http://www.phontron.com/kytea/index-ja.html).
 * `text`: タグ推定対象の文字列
 * `callback`: タグ推定処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、タグ推定結果が格納された配列です。配列の各要素の構造は以下のようになっています。
 
+```javascript
+[
+  {
+    surf: '私', // 単語表記
+    tags:[
       [
-    	  {
-    	  	surf: '私', // 単語表記
-    	  	tags:[
-    	  	  [
-    	  		  ['代名詞', 3.6951145482572487],//タグと信頼度
-    	  		  ['名詞', 3.7467785662991857]
-    	  	  ],
-    	  	  [ 
-    	  		  ['わたし', 2.3796118434353652],
-    	  		  ['わたくし', -0.2574841759018055]
-    	  	  ]
-    	  	]
-    	  }
-      ]
+    	  ['代名詞', 3.6951145482572487],//タグと信頼度
+    	  ['名詞', 3.7467785662991857]
+    	],
+    	[ 
+    	  ['わたし', 2.3796118434353652],
+    	  ['わたくし', -0.2574841759018055]
+    	]
+   ]
+ }
+]
+```
 
 ## Install
 
