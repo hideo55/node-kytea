@@ -48,6 +48,7 @@ var kt = new KyTea(path, { tagmax: 3 }, function(err){
 * `callback`: 単語分割処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、分割された単語が格納された配列です。
 
 例：
+
 ```javascript
 kytea.getWS('',function(err,words){
   ...
@@ -87,9 +88,11 @@ node-kytea は現在、KyTea 0.4.0 での動作を確認しています。
 
 KyTea のヘッダ及びライブラのパスがインクルードパス、ライブラリパスに含まれるようにしたうえで、以下のコマンドを実行してください。
 
-    git clone git://github.com/hideo55/node-kytea.git
-    cd node-kytea
-    node-waf configure build
+```shell
+git clone git://github.com/hideo55/node-kytea.git
+cd node-kytea
+node-waf configure build
+```
 
 ## License 
 
