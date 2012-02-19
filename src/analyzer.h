@@ -4,7 +4,8 @@
 #include <v8.h>
 #include <node.h>
 #include <string>
-#include <vector>
+#include <tr1/unordered_map>
+#include <utility>
 #include "kytea/kytea.h"
 #include "kytea/kytea-struct.h"
 
