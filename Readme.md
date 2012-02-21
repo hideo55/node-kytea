@@ -14,7 +14,7 @@ var KyTea = require('kytea').KyTea;
 var path = '/path/to/model';
 var kt = new KyTea(path, { tagmax: 3 }, function(err){
   if(err) throw err;
-  kytea.getAllTags("...", function(err,obj){
+  kt.getAllTags("...", function(err,obj){
     for(var i =0; i< obj.length;i++){
       var word = obj[i].surf;
       var pos = obj[i].tags[0];
@@ -38,6 +38,7 @@ var kt = new KyTea(path, { tagmax: 3 }, function(err){
   * `deftag`: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(Default: 'UNK')
   * `unkbeam`: 未知語の読み推定で利用するビーム幅。(Default: 50)
   * `unktag`: 辞書に存在しない単語に付与されるタグ。(Default: '')
+  * `enable_h2f`: 半角文字を全角に変換して解析する。(Default: true)
 * `callback`: モデルの読み込みが完了した時点でこの関数が呼ばれます。
 
 ### getWS(text, callback)
