@@ -1,4 +1,4 @@
-var kytea = require('./build/Release/kytea').NodeKyTea;
+var kytea = require('./build/Release/kytea').Kytea;
 
 var pattern = new RegExp('[A-Za-z0-9 ]', 'g');
 

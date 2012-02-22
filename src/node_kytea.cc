@@ -7,10 +7,10 @@ using namespace v8;
 using namespace node;
 using namespace kytea;
 
-void NodeKyTea::Init(Handle<Object> target) {
+void NodeKytea::Init(Handle<Object> target) {
     HandleScope scope;
     Local < FunctionTemplate > t = FunctionTemplate::New(New);
-    t->SetClassName(String::NewSymbol("NodeKyTea"));
+    t->SetClassName(String::NewSymbol("Kytea"));
     t->InstanceTemplate()->SetInternalFieldCount(4);
 
     NODE_SET_PROTOTYPE_METHOD(t, "getWS", getWS);
@@ -19,18 +19,18 @@ void NodeKyTea::Init(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "isEnableHalf2Full", isEnableHalf2Full);
 
     Persistent < Function > constructor = Persistent<Function>::New(t->GetFunction());
-    target->Set(String::NewSymbol("NodeKyTea"), constructor);
+    target->Set(String::NewSymbol("Kytea"), constructor);
 }
 
-NodeKyTea::NodeKyTea() :
+NodeKytea::NodeKytea() :
     isModelLoaded(false), enableH2F(true) {
 }
 
-NodeKyTea::~NodeKyTea() {
+NodeKytea::~NodeKytea() {
     delete kytea;
 }
 
-Handle<Value> NodeKyTea::New(const Arguments& args) {
+Handle<Value> NodeKytea::New(const Arguments& args) {
     HandleScope scope;
 
     REQ_STR_ARG(0);
@@ -38,7 +38,7 @@ Handle<Value> NodeKyTea::New(const Arguments& args) {
 
     Local < Function > cb;
 
-    NodeKyTea* obj = new NodeKyTea();
+    NodeKytea* obj = new NodeKytea();
     obj->kytea = new Kytea();
 
     kytea::KyteaConfig* config = obj->kytea->getConfig();
@@ -77,7 +77,7 @@ Handle<Value> NodeKyTea::New(const Arguments& args) {
     return args.This();
 }
 
-void NodeKyTea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
+void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
     if (opt->Get(String::New("debug"))->ToBoolean()->IsTrue()) {
         config->setDebug(1);
     }
@@ -108,15 +108,15 @@ void NodeKyTea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
     }
 }
 
-v8::Handle<v8::Value> NodeKyTea::isEnableHalf2Full(const v8::Arguments& args) {
+v8::Handle<v8::Value> NodeKytea::isEnableHalf2Full(const v8::Arguments& args) {
     v8::HandleScope scope;
-    NodeKyTea* kt = Unwrap<NodeKyTea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
     return scope.Close(v8::Boolean::New(kt->enableH2F));
 }
 
-void NodeKyTea::Work_ReadModel(uv_work_t* req) {
+void NodeKytea::Work_ReadModel(uv_work_t* req) {
     ReadBaton* baton = static_cast<ReadBaton*> (req->data);
-    NodeKyTea* kt = baton->kt;
+    NodeKytea* kt = baton->kt;
     try {
         kt->kytea->readModel(baton->filename.c_str());
     } catch (std::exception &e) {
@@ -125,10 +125,10 @@ void NodeKyTea::Work_ReadModel(uv_work_t* req) {
     }
 }
 
-void NodeKyTea::Work_AfterReadModel(uv_work_t* req) {
+void NodeKytea::Work_AfterReadModel(uv_work_t* req) {
     HandleScope scope;
     ReadBaton* baton = static_cast<ReadBaton*> (req->data);
-    NodeKyTea* kt = baton->kt;
+    NodeKytea* kt = baton->kt;
     std::string msg = baton->message;
 
     Local < Value > argv[1];
@@ -147,12 +147,12 @@ void NodeKyTea::Work_AfterReadModel(uv_work_t* req) {
     delete baton;
 }
 
-Handle<Value> NodeKyTea::getWS(const Arguments& args) {
+Handle<Value> NodeKytea::getWS(const Arguments& args) {
     HandleScope scope;
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKyTea* kt = Unwrap<NodeKyTea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
     if (kt->isModelLoaded) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
@@ -164,9 +164,9 @@ Handle<Value> NodeKyTea::getWS(const Arguments& args) {
     return args.This();
 }
 
-void NodeKyTea::Work_WS(uv_work_t* req) {
+void NodeKytea::Work_WS(uv_work_t* req) {
     WsBaton* baton = static_cast<WsBaton*> (req->data);
-    NodeKyTea* kt = baton->kt;
+    NodeKytea* kt = baton->kt;
     try {
         StringUtil* util = kt->kytea->getStringUtil();
         KyteaConfig* config = kt->kytea->getConfig();
@@ -179,10 +179,10 @@ void NodeKyTea::Work_WS(uv_work_t* req) {
     }
 }
 
-void NodeKyTea::Work_AfterWS(uv_work_t* req) {
+void NodeKytea::Work_AfterWS(uv_work_t* req) {
     HandleScope scope;
     WsBaton* baton = static_cast<WsBaton*> (req->data);
-    NodeKyTea* kt = baton->kt;
+    NodeKytea* kt = baton->kt;
     std::string msg = baton->message;
 
     Local < Value > argv[2];
@@ -210,12 +210,12 @@ void NodeKyTea::Work_AfterWS(uv_work_t* req) {
     delete baton;
 }
 
-Handle<Value> NodeKyTea::getTags(const Arguments& args) {
+Handle<Value> NodeKytea::getTags(const Arguments& args) {
     HandleScope scope;
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKyTea* kt = Unwrap<NodeKyTea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
     if (kt->isModelLoaded) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
@@ -228,12 +228,12 @@ Handle<Value> NodeKyTea::getTags(const Arguments& args) {
     return args.This();
 }
 
-Handle<Value> NodeKyTea::getAllTags(const Arguments& args) {
+Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
     HandleScope scope;
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKyTea* kt = Unwrap<NodeKyTea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
     if (kt->isModelLoaded) {
         TagsBaton* baton = new TagsBaton(kt, cb, sentence, true);
         int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
@@ -243,9 +243,9 @@ Handle<Value> NodeKyTea::getAllTags(const Arguments& args) {
     return args.This();
 }
 
-void NodeKyTea::Work_Tags(uv_work_t* req) {
+void NodeKytea::Work_Tags(uv_work_t* req) {
     TagsBaton* baton = static_cast<TagsBaton*> (req->data);
-    NodeKyTea* kt = baton->kt;
+    NodeKytea* kt = baton->kt;
     try {
         StringUtil* util = kt->kytea->getStringUtil();
         KyteaConfig* config = kt->kytea->getConfig();
@@ -264,10 +264,10 @@ void NodeKyTea::Work_Tags(uv_work_t* req) {
     }
 }
 
-void NodeKyTea::Work_AfterTags(uv_work_t* req) {
+void NodeKytea::Work_AfterTags(uv_work_t* req) {
     HandleScope scope;
     TagsBaton* baton = static_cast<TagsBaton*> (req->data);
-    NodeKyTea* kt = baton->kt;
+    NodeKytea* kt = baton->kt;
     std::string msg = baton->message;
 
     Local < Value > argv[2];
@@ -323,7 +323,7 @@ void NodeKyTea::Work_AfterTags(uv_work_t* req) {
 namespace {
 void Initialize(v8::Handle<v8::Object> target) {
     v8::HandleScope scope;
-    NodeKyTea::Init(target);
+    NodeKytea::Init(target);
 }
 }
 

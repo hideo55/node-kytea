@@ -11,10 +11,10 @@
 
 namespace node_kytea {
 
-class NodeKyTea: node::ObjectWrap {
+class NodeKytea: node::ObjectWrap {
 public:
-    NodeKyTea();
-    ~NodeKyTea();
+    NodeKytea();
+    ~NodeKytea();
 
     static void Init(v8::Handle<v8::Object> target);
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
@@ -32,9 +32,9 @@ public:
         v8::Persistent<v8::Function> callback;
         StatusType status;
         std::string message;
-        NodeKyTea* kt;
+        NodeKytea* kt;
 
-        Baton(NodeKyTea* kt_, v8::Handle<v8::Function> cb_) :
+        Baton(NodeKytea* kt_, v8::Handle<v8::Function> cb_) :
             kt(kt_), status(ST_OK) {
             kt->Ref();
             uv_ref( uv_default_loop());
@@ -50,7 +50,7 @@ public:
 
     struct ReadBaton: Baton {
         std::string filename;
-        ReadBaton(NodeKyTea* kt_, v8::Handle<v8::Function> cb_, std::string filename_) :
+        ReadBaton(NodeKytea* kt_, v8::Handle<v8::Function> cb_, std::string filename_) :
             Baton(kt_, cb_), filename(filename_) {
         }
     };
@@ -58,14 +58,14 @@ public:
     struct WsBaton: Baton {
         std::string sentence;
         kytea::KyteaSentence::Words words;
-        WsBaton(NodeKyTea* kt_, v8::Handle<v8::Function> cb_, std::string sentence_) :
+        WsBaton(NodeKytea* kt_, v8::Handle<v8::Function> cb_, std::string sentence_) :
             Baton(kt_, cb_), sentence(sentence_) {
         }
     };
 
     struct TagsBaton: WsBaton {
         bool all;
-        TagsBaton(NodeKyTea* kt_, v8::Handle<v8::Function> cb_, std::string sentence_, bool all_ = false) :
+        TagsBaton(NodeKytea* kt_, v8::Handle<v8::Function> cb_, std::string sentence_, bool all_ = false) :
             WsBaton(kt_, cb_, sentence_), all(all_) {
         }
     };
