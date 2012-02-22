@@ -92,12 +92,15 @@ void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
             Local < Array > notag = Array::Cast(*(opt->Get(String::New("notag"))));
             for (int i = 0; i < notag->Length(); i++) {
                 if (notag->Get(Integer::New(i))->IsInt32()) {
+
                     unsigned int tag_index = notag->Get(Integer::New(i))->ToUint32()->Value();
-                    if (tag_index < 1)
+                    if (tag_index < 1) {
                         ThrowException(
                                 Exception::TypeError(
                                         String::New("Illegal setting for \"notag\" (must be 1 or greater)")));
-                    config->setDoTag(tag_index - 1, false);
+                    } else {
+                        config->setDoTag(tag_index - 1, false);
+                    }
                 } else {
                     ThrowException(Exception::TypeError(String::New("Option \"notag\" must be a array of integer")));
                 }

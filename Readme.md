@@ -10,9 +10,9 @@ See [http://www.phontron.com/kytea/index-ja.html](http://www.phontron.com/kytea/
 ## Usage
 
 ```javascript
-var KyTea = require('kytea').KyTea;
+var Kytea = require('kytea').Kytea;
 var path = '/path/to/model';
-var kt = new KyTea(path, { tagmax: 3 }, function(err){
+var kt = new Kytea(path, { tagmax: 3 }, function(err){
   if(err) throw err;
   kt.getAllTags("...", function(err,obj){
     for(var i =0; i< obj.length;i++){
@@ -26,7 +26,7 @@ var kt = new KyTea(path, { tagmax: 3 }, function(err){
 
 ## Methods
 	
-### new KyTea(modelPath, options, callback)
+### new Kytea(modelPath, options, callback)
 
 `modelPath`で指定されたモデルを読み込み、KyTeaのオブジェクトを作成します。
 

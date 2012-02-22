@@ -10,7 +10,6 @@ var processWords = function(str, res) {
     i += len;
   });
 };
-
 var processTags = function(str, res) {
   var i = 0;
   res.forEach(function(v) {
@@ -19,7 +18,6 @@ var processTags = function(str, res) {
     i += len;
   });
 };
-
 var createFilteredFunction = function(func, after) {
   return function(str, cb) {
     if(this.isEnableHalf2Full()) {
@@ -37,9 +35,8 @@ var createFilteredFunction = function(func, after) {
     }
   };
 };
-
 kytea.prototype.getWS = createFilteredFunction(kytea.prototype.getWS, processWords);
 kytea.prototype.getTags = createFilteredFunction(kytea.prototype.getTags, processTags);
 kytea.prototype.getAllTags = createFilteredFunction(kytea.prototype.getAllTags, processTags);
 
-exports.KyTea = kytea;
+exports.Kytea = kytea;
