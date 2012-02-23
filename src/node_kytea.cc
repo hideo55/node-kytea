@@ -162,7 +162,10 @@ Handle<Value> NodeKytea::getWS(const Arguments& args) {
         WsBaton* baton = new WsBaton(kt, cb, sentence);
         int status = uv_queue_work(uv_default_loop(), &baton->request, Work_WS, Work_AfterWS);
     } else {
-        ThrowException(Exception::Error(v8::String::New("Model in not loaded")));
+        const unsigned int argc = 1;
+        Local < Value > argv[1];
+        argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     return args.This();
 }
@@ -226,7 +229,10 @@ Handle<Value> NodeKytea::getTags(const Arguments& args) {
         TagsBaton* baton = new TagsBaton(kt, cb, sentence);
         int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
     } else {
-        ThrowException(Exception::Error(v8::String::New("Model in not loaded")));
+        const unsigned int argc = 1;
+        Local < Value > argv[1];
+        argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     return args.This();
 }
@@ -241,7 +247,10 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
         TagsBaton* baton = new TagsBaton(kt, cb, sentence, true);
         int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
     } else {
-        ThrowException(Exception::Error(v8::String::New("Model in not loaded")));
+        const unsigned int argc = 1;
+        Local < Value > argv[1];
+        argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
     return args.This();
 }

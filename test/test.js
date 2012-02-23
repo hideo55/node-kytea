@@ -9,18 +9,18 @@ var path = '' + __dirname + '/data/test.mod';
     assert( err instanceof Error);
     assert(err.message.match(/^Could not open model file \.\/path\/notexists$/));
   });
-  assert.throws(function() {
-    kytea.getWS('hoge', function() {
-    });
-  }, /Model in not loaded/);
-  assert.throws(function() {
-    kytea.getTags('hoge', function() {
-    });
-  }, /Model in not loaded/);
-  assert.throws(function() {
-    kytea.getAllTags('hoge', function() {
-    });
-  }, /Model in not loaded/);
+  kytea.getWS('hoge', function(err) {
+    assert( err instanceof Error);
+    assert(err.message.match(/^Model in not loaded$/));
+  });
+  kytea.getTags('hoge', function(err) {
+    assert( err instanceof Error);
+    assert(err.message.match(/^Model in not loaded$/));
+  });
+  kytea.getAllTags('hoge', function(err) {
+    assert( err instanceof Error);
+    assert(err.message.match(/^Model in not loaded$/));
+  });
   assert.throws(function() {
     new Kytea(path);
   }, /Invalid Argument/);
