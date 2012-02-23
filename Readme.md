@@ -32,13 +32,13 @@ var kytea = new Kytea(path, { tagmax: 3 }, function(err){
 
 * `modelPath`: モデルのファイルパス
 * `options`*(optional)*: 解析オプションです。現在、以下のオプションをサポートしています。
-  * `notag`: n個目のタグを推定しない。
+  * `notag`: n個目のタグを推定しない。(Default: \[\], \[1\]の場合は1番目のタグ推定がスキップされます)
   * `nounk`: 未知語の読み推定を行わない。(Default: false)
-  * `tagmax`: 1単語あたりのタグの最大数。(Default: 3) 
+  * `tagmax`: 1単語あたりのタグの最大数。(Default: 3、0の場合は無制限) 
   * `deftag`: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(Default: 'UNK')
   * `unkbeam`: 未知語の読み推定で利用するビーム幅。(Default: 50)
   * `unktag`: 辞書に存在しない単語に付与されるタグ。(Default: '')
-  * `enable_h2f`: 半角文字を全角に変換して解析する。(Default: true)
+  * `enable_h2f`: 半角文字を全角に変換して解析します。(Default: true)
 * `callback`: モデルの読み込みが完了した時点でこの関数が呼ばれます。
 
 ### getWS(text, callback)
