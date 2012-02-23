@@ -1,7 +1,7 @@
 
 # node-kytea
 
-  node-kytea は Kytea を Node.js から利用するための C++ Addon です。
+node-kytea は Kytea を Node.js から利用するための C++ Addon です。
 
 # What is KyTea?
 
@@ -12,9 +12,9 @@ See [http://www.phontron.com/kytea/index-ja.html](http://www.phontron.com/kytea/
 ```javascript
 var Kytea = require('kytea').Kytea;
 var path = '/path/to/model';
-var kt = new Kytea(path, { tagmax: 3 }, function(err){
+var kytea = new Kytea(path, { tagmax: 3 }, function(err){
   if(err) throw err;
-  kt.getAllTags("...", function(err,obj){
+  kytea.getAllTags("これはテストです。", function(err,obj){
     for(var i =0; i< obj.length;i++){
       var word = obj[i].surf;
       var pos = obj[i].tags[0];
@@ -51,7 +51,7 @@ var kt = new Kytea(path, { tagmax: 3 }, function(err){
 例：
 
 ```javascript
-kytea.getWS('',function(err,words){
+kytea.getWS('これはテストです。',function(err,words){
   ...
 });
 ```
@@ -59,33 +59,56 @@ kytea.getWS('',function(err,words){
 ### getTags(text, callback)
 ### getAllTags(text, callback)
 
-タグ推定(品詞、読み)を実行します。getTags()の場合はタグが複数ある場合は信頼度が最も高い1つのみを取得し、getAllTags()の場合は全てのタグを取得します。
+タグ推定(品詞、読み等)を実行します。getTags()の場合はタグが複数ある場合は信頼度が最も高い1つのみを取得し、getAllTags()の場合は全てのタグを取得します。
 
 * `text`: タグ推定対象の文字列
 * `callback`: タグ推定処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、タグ推定結果が格納された配列です。配列の各要素の構造は以下のようになっています。
 
+例:
+
+```javascript
+kytea.getAllTags("これはテストです。", function(err, res){
+  if(err) throw err;
+  res.forEach(function(elm){
+    var surf = elm.surf;
+    var tags = elm.tags;
+    tags.forEach(function(tag){
+    	var tag_name = tag[0];
+    	var confidence = tag[1];
+    	...
+    });
+  });
+});
+```
+
+なお、コールバック関数の第２引数は以下のようなオブジェクトです。
+
 ```javascript
 [
   {
-    surf: '私', // 単語表記
+    surf: 'これ', // 単語表記
     tags:[
       [// 1つ目のタグのリスト(この例では品詞)
         ['代名詞', 3.6951145482572487],//タグと信頼度
         ['名詞', 3.7467785662991857]
       ],
       [// 2つ目のタグのリスト(この例では読み) 
-        ['わたし', 2.3796118434353652],
-        ['わたくし', -0.2574841759018055]
+        ['これ', 2.3796118434353652],
       ]
     ]
   }
 ]
 ```
 
-## Install
+## Requirement
 
-node-kytea は現在、KyTea 0.4.0 での動作を確認しています。
-インストールの前に、[こちら](http://www.phontron.com/kytea/index-ja.html)から KyTea 0.4.0 をダウンロードして、インストールしてください。
+* Node >= v0.6.x
+* KyTea >= 0.4.0
+
+node-kytea は KyTea 0.4.0 での動作を確認しています。
+インストールの前に、[こちら](http://www.phontron.com/kytea/index-ja.html)から KyTea をダウンロードして、インストールしてください。
+
+## Install
 
 KyTea のヘッダ及びライブラのパスがインクルードパス、ライブラリパスに含まれるようにしたうえで、以下のコマンドを実行してください。
 
@@ -99,7 +122,7 @@ node-waf configure build
 
 (The MIT License)
 
-Copyright (c) 2011 Hideaki Ohno &lt;hide.o.j55{at}gmail.com&gt;
+Copyright (c) 2012 Hideaki Ohno &lt;hide.o.j55{at}gmail.com&gt;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
