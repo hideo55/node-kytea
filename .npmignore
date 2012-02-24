@@ -1,0 +1,6 @@
+.lock-wscript
+.gitignore
+.project
+.settings/
+.git/
+build/
