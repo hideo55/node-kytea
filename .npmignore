@@ -1,5 +1,6 @@
 .lock-wscript
 .gitignore
+.shipit.json
 .project
 .settings/
 .git/
