@@ -92,7 +92,7 @@ function tests(path) {
           tags : [[['代名詞', 100]], [['これ', 100]]]
         }, {
           surf : 'は',
-          tags : [[['助詞', 100]], [['は', 100]]]
+          tags : [[['助詞', 0.047801458212339325]], [['は', 100]]]
         }, {
           surf : 'テスト',
           tags : [[['名詞', 100]], [['てすと', 100]]]
@@ -115,6 +115,19 @@ function tests(path) {
         }, {
           surf : '年',
           tags : [[['接尾辞', 100]], [['ねん', 100]]]
+        }];
+        assert.deepEqual(res, expected);
+      });
+      kytea.getAllTags("これはテスト", function(err, res) {
+        var expected = [{
+          surf : 'これ',
+          tags : [[['代名詞', 100]], [['これ', 100]]]
+        }, {
+          surf : 'は',
+          tags : [[['助詞', 0.047801458212339325], ['言いよどみ', 0]], [['は', 100]]]
+        }, {
+          surf : 'テスト',
+          tags : [[['名詞', 100]], [['てすと', 100]]]
         }];
         assert.deepEqual(res, expected);
       });
