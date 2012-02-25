@@ -23,11 +23,13 @@ void NodeKytea::Init(Handle<Object> target) {
 }
 
 NodeKytea::NodeKytea() :
-    isModelLoaded(false), enableH2F(true) {
+    kytea(NULL), isModelLoaded(false), enableH2F(true) {
 }
 
 NodeKytea::~NodeKytea() {
-    delete kytea;
+    if (kytea != NULL) {
+        delete kytea;
+    }
 }
 
 Handle<Value> NodeKytea::New(const Arguments& args) {
@@ -280,6 +282,7 @@ void NodeKytea::Work_AfterTags(uv_work_t* req) {
     HandleScope scope;
     TagsBaton* baton = static_cast<TagsBaton*> (req->data);
     NodeKytea* kt = baton->kt;
+    KyteaConfig* config = kt->kytea->getConfig();
     std::string msg = baton->message;
 
     Local < Value > argv[2];
@@ -303,20 +306,24 @@ void NodeKytea::Work_AfterTags(uv_work_t* req) {
             Local < Array > elm_tags = Array::New(tags_size);
 
             for (int j = 0; j < tags_size; j++) {
-                const std::vector<KyteaTag>& tags = w.getTags(j);
-                int tag_size = tags.size();
-                if (!baton->all) {
-                    tag_size = 1;
+                if (config->getDoTag(j) == 0) {
+                    elm_tags->Set(Integer::New(j), Array::New(0));
+                } else {
+                    const std::vector<KyteaTag>& tags = w.getTags(j);
+                    int tag_size = tags.size();
+                    if (!baton->all) {
+                        tag_size = 1;
+                    }
+                    Local < Array > tag_set(Array::New(tag_size));
+                    for (int k = 0; k < tag_size; k++) {
+                        Local < Array > tag(Array::New(2));
+                        std::string tag_str = util->showString(tags[k].first);
+                        tag->Set(Integer::New(0), String::New(tag_str.c_str(), tag_str.size()));
+                        tag->Set(Integer::New(1), Number::New(tags[k].second));
+                        tag_set->Set(Integer::New(k), tag);
+                    }
+                    elm_tags->Set(Integer::New(j), tag_set);
                 }
-                Local < Array > tag_set(Array::New(tag_size));
-                for (int k = 0; k < tag_size; k++) {
-                    Local < Array > tag(Array::New(2));
-                    std::string tag_str = util->showString(tags[k].first);
-                    tag->Set(Integer::New(0), String::New(tag_str.c_str(), tag_str.size()));
-                    tag->Set(Integer::New(1), Number::New(tags[k].second));
-                    tag_set->Set(Integer::New(k), tag);
-                }
-                elm_tags->Set(Integer::New(j), tag_set);
             }
             elm->Set(String::New("tags"), elm_tags);
             res->Set(Integer::New(i), elm);
