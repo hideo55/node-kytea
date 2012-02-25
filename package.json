@@ -1,14 +1,12 @@
 {
-	"name": "KyTea",
+	"name": "kytea",
 	"version": "0.0.1",
 	"description": "Node binding of KyTea",
 	"repository": "https://github.com/hideo55/node-kytea",
 	"keywords": ["NLP"],
 	"author": "Hideaki Ohno <hide.o.j55@gmail.com>",
 	"dependencies": {},
-	"devDependencies": {
-		"nodeunit": ""
-	},
+	"devDependencies": {},
 	"main": "./index.js",
 	"engines": {
 		"node": "0.6.x"
