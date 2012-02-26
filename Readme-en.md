@@ -112,6 +112,12 @@ Please download and install KyTea before installation.
 Please set a path to directory of Kytea's header and library files, and execute following commands.
 
 ```shell
+npm install kytea
+```
+
+or
+
+```shell
 git clone git://github.com/hideo55/node-kytea.git
 cd node-kytea
 node-waf configure build

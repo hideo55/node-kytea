@@ -113,6 +113,12 @@ node-kytea は KyTea 0.4.0 での動作を確認しています。
 KyTea のヘッダ及びライブラのパスがインクルードパス、ライブラリパスに含まれるようにしたうえで、以下のコマンドを実行してください。
 
 ```shell
+npm install kytea
+```
+
+または
+
+```shell
 git clone git://github.com/hideo55/node-kytea.git
 cd node-kytea
 node-waf configure build
