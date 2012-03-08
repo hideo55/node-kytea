@@ -246,6 +246,8 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
     REQ_FUN_ARG(1, cb);
     NodeKytea* kt = Unwrap<NodeKytea> (args.This());
     if (kt->isModelLoaded) {
+        config->setDoWS(true);
+        config->setDoTags(true);
         TagsBaton* baton = new TagsBaton(kt, cb, sentence, true);
         int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
     } else {
