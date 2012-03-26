@@ -1,7 +1,7 @@
 
 # node-kytea
 
-node-kytea は Kytea を Node.js から利用するための C++ Addon です。
+node-kytea は単語分割、品詞推定、読み推定を行うテキスト解析器 Kytea を Node.js から利用するための C++ Addon です。
 
 # What is KyTea?
 
