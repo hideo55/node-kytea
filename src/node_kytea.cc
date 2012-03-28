@@ -71,12 +71,12 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
     for (int i = 0; i < config->getNumTags(); i++)
         config->setDoTag(i, true);
 
-    obj->Wrap(args.This());
+    obj->Wrap(args.Holder());
 
     ReadBaton* baton = new ReadBaton(obj, cb, filename);
     int status = uv_queue_work(uv_default_loop(), &baton->request, Work_ReadModel, Work_AfterReadModel);
 
-    return args.This();
+    return args.Holder();
 }
 
 void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
@@ -115,7 +115,7 @@ void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
 
 v8::Handle<v8::Value> NodeKytea::isEnableHalf2Full(const v8::Arguments& args) {
     v8::HandleScope scope;
-    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
     return scope.Close(v8::Boolean::New(kt->enableH2F));
 }
 
@@ -157,7 +157,7 @@ Handle<Value> NodeKytea::getWS(const Arguments& args) {
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
     if (kt->isModelLoaded) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
@@ -169,7 +169,7 @@ Handle<Value> NodeKytea::getWS(const Arguments& args) {
         argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
-    return args.This();
+    return args.Holder();
 }
 
 void NodeKytea::Work_WS(uv_work_t* req) {
@@ -223,7 +223,7 @@ Handle<Value> NodeKytea::getTags(const Arguments& args) {
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
     if (kt->isModelLoaded) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
@@ -236,7 +236,7 @@ Handle<Value> NodeKytea::getTags(const Arguments& args) {
         argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
-    return args.This();
+    return args.Holder();
 }
 
 Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
@@ -244,8 +244,9 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKytea* kt = Unwrap<NodeKytea> (args.This());
+    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
     if (kt->isModelLoaded) {
+        kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
         config->setDoTags(true);
         TagsBaton* baton = new TagsBaton(kt, cb, sentence, true);
@@ -256,7 +257,7 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
         argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
-    return args.This();
+    return args.Holder();
 }
 
 void NodeKytea::Work_Tags(uv_work_t* req) {
