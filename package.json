@@ -1,6 +1,6 @@
 {
 	"name": "kytea",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Node binding of KyTea",
 	"repository": "https://github.com/hideo55/node-kytea",
 	"keywords": ["NLP"],
