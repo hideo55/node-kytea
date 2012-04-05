@@ -76,7 +76,7 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
     ReadBaton* baton = new ReadBaton(obj, cb, filename);
     int status = uv_queue_work(uv_default_loop(), &baton->request, Work_ReadModel, Work_AfterReadModel);
 
-    return args.Holder();
+    return scope.Close(args.Holder());
 }
 
 void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
@@ -169,7 +169,7 @@ Handle<Value> NodeKytea::getWS(const Arguments& args) {
         argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
-    return args.Holder();
+    return scope.Close(args.Holder());
 }
 
 void NodeKytea::Work_WS(uv_work_t* req) {
@@ -236,7 +236,7 @@ Handle<Value> NodeKytea::getTags(const Arguments& args) {
         argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
-    return args.Holder();
+    return scope.Close(args.Holder());
 }
 
 Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
@@ -257,7 +257,7 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
         argv[0] = Exception::Error(v8::String::New("Model in not loaded"));
         cb->Call(Context::GetCurrent()->Global(), argc, argv);
     }
-    return args.Holder();
+    return scope.Close(args.Holder());
 }
 
 void NodeKytea::Work_Tags(uv_work_t* req) {
