@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Node-kytea : Node.js binding of KyTea" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Node-kytea</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/hideo55/node-kytea">Fork Me on GitHub</a>
+
+          <h1 id="project_title">Node-kytea</h1>
+          <h2 id="project_tagline">Node.js binding of KyTea</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/hideo55/node-kytea/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/hideo55/node-kytea/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>node-kytea</h1>
+
+<p>node-kytea は単語分割、品詞推定、読み推定を行うテキスト解析器 Kytea を Node.js から利用するための C++ Addon です。</p>
+
+<h2>What is KyTea?</h2>
+
+<p>See <a href="http://www.phontron.com/kytea/index-ja.html">http://www.phontron.com/kytea/index-ja.html</a>.</p>
+
+<h2>Usage</h2>
+
+<div class="highlight">
+<pre><span class="kd">var</span> <span class="nx">Kytea</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'kytea'</span><span class="p">).</span><span class="nx">Kytea</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="s1">'/path/to/model'</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">kytea</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Kytea</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="p">{</span> <span class="nx">tagmax</span><span class="o">:</span> <span class="mi">3</span> <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="nx">kytea</span><span class="p">.</span><span class="nx">getAllTags</span><span class="p">(</span><span class="s2">"これはテストです。"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">obj</span><span class="p">){</span>
+    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">&lt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+      <span class="kd">var</span> <span class="nx">word</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">surf</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">pos</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+      <span class="kd">var</span> <span class="nx">pron</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">tags</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+
+<h2>Methods</h2>
+
+<h3>new Kytea(modelPath, options, callback)</h3>
+
+<p><code>modelPath</code>で指定されたモデルを読み込み、KyTeaのオブジェクトを作成します。</p>
+
+<ul>
+<li>
+<code>modelPath</code>: モデルのファイルパス</li>
+<li>
+<code>options</code><em>(optional)</em>: 解析オプションです。現在、以下のオプションをサポートしています。
+
+<ul>
+<li>
+<code>notag</code>: n個目のタグを推定しない。(Default: [], [1]の場合は1番目のタグ推定がスキップされます)</li>
+<li>
+<code>nounk</code>: 未知語の読み推定を行わない。(Default: false)</li>
+<li>
+<code>tagmax</code>: 1単語あたりのタグの最大数。(Default: 3、0の場合は無制限) </li>
+<li>
+<code>deftag</code>: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(Default: 'UNK')</li>
+<li>
+<code>unkbeam</code>: 未知語の読み推定で利用するビーム幅。(Default: 50)</li>
+<li>
+<code>unktag</code>: 辞書に存在しない単語に付与されるタグ。(Default: '')</li>
+<li>
+<code>enable_h2f</code>: 半角文字を全角に変換して解析します。(Default: true)</li>
+</ul>
+</li>
+<li>
+<code>callback</code>: モデルの読み込みが完了した時点でこの関数が呼ばれます。</li>
+</ul><h3>getWS(text, callback)</h3>
+
+<p>単語分割を実行します。</p>
+
+<ul>
+<li>
+<code>text</code>: 単語分割対象の文字列</li>
+<li>
+<code>callback</code>: 単語分割処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、分割された単語が格納された配列です。</li>
+</ul><p>例：</p>
+
+<div class="highlight">
+<pre><span class="nx">kytea</span><span class="p">.</span><span class="nx">getWS</span><span class="p">(</span><span class="s1">'これはテストです。'</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">words</span><span class="p">){</span>
+  <span class="p">...</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+
+<h3>getTags(text, callback)</h3>
+
+<h3>getAllTags(text, callback)</h3>
+
+<p>タグ推定(品詞、読み等)を実行します。getTags()の場合はタグが複数ある場合は信頼度が最も高い1つのみを取得し、getAllTags()の場合は全てのタグを取得します。</p>
+
+<ul>
+<li>
+<code>text</code>: タグ推定対象の文字列</li>
+<li>
+<code>callback</code>: タグ推定処理が完了した時点でこの関数が呼ばれます。引数はエラーオブジェクトと、タグ推定結果が格納された配列です。配列の各要素の構造は以下のようになっています。</li>
+</ul><p>例:</p>
+
+<div class="highlight">
+<pre><span class="nx">kytea</span><span class="p">.</span><span class="nx">getAllTags</span><span class="p">(</span><span class="s2">"これはテストです。"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">){</span>
+  <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span><span class="p">;</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">elm</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">surf</span> <span class="o">=</span> <span class="nx">elm</span><span class="p">.</span><span class="nx">surf</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">tags</span> <span class="o">=</span> <span class="nx">elm</span><span class="p">.</span><span class="nx">tags</span><span class="p">;</span>
+    <span class="nx">tags</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">tag</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">tag_name</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+        <span class="kd">var</span> <span class="nx">confidence</span> <span class="o">=</span> <span class="nx">tag</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+        <span class="p">...</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre>
+</div>
+
+
+<p>なお、コールバック関数の第２引数は以下のようなオブジェクトです。</p>
+
+<div class="highlight">
+<pre><span class="p">[</span>
+  <span class="p">{</span>
+    <span class="nx">surf</span><span class="o">:</span> <span class="s1">'これ'</span><span class="p">,</span> <span class="c1">// 単語表記</span>
+    <span class="nx">tags</span><span class="o">:</span><span class="p">[</span>
+      <span class="p">[</span><span class="c1">// 1つ目のタグのリスト(この例では品詞)</span>
+        <span class="p">[</span><span class="s1">'代名詞'</span><span class="p">,</span> <span class="mf">3.6951145482572487</span><span class="p">],</span><span class="c1">//タグと信頼度</span>
+        <span class="p">[</span><span class="s1">'名詞'</span><span class="p">,</span> <span class="mf">3.7467785662991857</span><span class="p">]</span>
+      <span class="p">],</span>
+      <span class="p">[</span><span class="c1">// 2つ目のタグのリスト(この例では読み) </span>
+        <span class="p">[</span><span class="s1">'これ'</span><span class="p">,</span> <span class="mf">2.3796118434353652</span><span class="p">],</span>
+      <span class="p">]</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+</pre>
+</div>
+
+
+<h2>Requirement</h2>
+
+<ul>
+<li>Node &gt;= v0.6.x</li>
+<li>KyTea &gt;= 0.4.0</li>
+</ul><p>node-kytea は KyTea 0.4.0 での動作を確認しています。
+インストールの前に、<a href="http://www.phontron.com/kytea/index-ja.html">こちら</a>から KyTea をダウンロードして、インストールしてください。</p>
+
+<h2>Install</h2>
+
+<p>KyTea のヘッダ及びライブラのパスがインクルードパス、ライブラリパスに含まれるようにしたうえで、以下のコマンドを実行してください。</p>
+
+<pre lang="shell"><code>npm install kytea
+</code></pre>
+
+<p>または</p>
+
+<pre lang="shell"><code>git clone git://github.com/hideo55/node-kytea.git
+cd node-kytea
+node-waf configure build
+</code></pre>
+
+<h2>License</h2>
+
+<p>(The MIT License)</p>
+
+<p>Copyright (c) 2012 Hideaki Ohno &lt;hide.o.j55{at}gmail.com&gt;</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Node-kytea maintained by <a href="https://github.com/hideo55">hideo55</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
