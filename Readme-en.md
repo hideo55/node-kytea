@@ -3,7 +3,7 @@
 
 node-kytea is C++ Addon of Node.js for using KyTea.
 
-# What is KyTea?
+## What is KyTea?
 
 See [http://www.phontron.com/kytea/](http://www.phontron.com/kytea/).
 
