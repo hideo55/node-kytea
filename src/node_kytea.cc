@@ -74,7 +74,7 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
     obj->Wrap(args.Holder());
 
     ReadBaton* baton = new ReadBaton(obj, cb, filename);
-    int status = uv_queue_work(uv_default_loop(), &baton->request, Work_ReadModel, Work_AfterReadModel);
+    uv_queue_work(uv_default_loop(), &baton->request, Work_ReadModel, Work_AfterReadModel);
 
     return scope.Close(args.Holder());
 }
@@ -92,7 +92,7 @@ void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
     if (opt->Has(String::New("notag"))) {
         if (opt->Get(String::New("notag"))->IsArray()) {
             Local < Array > notag = Array::Cast(*(opt->Get(String::New("notag"))));
-            for (int i = 0; i < notag->Length(); i++) {
+            for (unsigned int i = 0; i < notag->Length(); i++) {
                 if (notag->Get(Integer::New(i))->IsInt32()) {
 
                     unsigned int tag_index = notag->Get(Integer::New(i))->ToUint32()->Value();
@@ -162,7 +162,7 @@ Handle<Value> NodeKytea::getWS(const Arguments& args) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
         WsBaton* baton = new WsBaton(kt, cb, sentence);
-        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_WS, Work_AfterWS);
+        uv_queue_work(uv_default_loop(), &baton->request, Work_WS, Work_AfterWS);
     } else {
         const unsigned int argc = 1;
         Local < Value > argv[1];
@@ -177,7 +177,6 @@ void NodeKytea::Work_WS(uv_work_t* req) {
     NodeKytea* kt = baton->kt;
     try {
         StringUtil* util = kt->kytea->getStringUtil();
-        KyteaConfig* config = kt->kytea->getConfig();
         KyteaSentence sentence(util->mapString(baton->sentence));
         kt->kytea->calculateWS(sentence);
         baton->words = sentence.words;
@@ -229,7 +228,7 @@ Handle<Value> NodeKytea::getTags(const Arguments& args) {
         config->setDoWS(true);
         config->setDoTags(true);
         TagsBaton* baton = new TagsBaton(kt, cb, sentence);
-        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
+        uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
     } else {
         const unsigned int argc = 1;
         Local < Value > argv[1];
@@ -250,7 +249,7 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
         config->setDoWS(true);
         config->setDoTags(true);
         TagsBaton* baton = new TagsBaton(kt, cb, sentence, true);
-        int status = uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
+        uv_queue_work(uv_default_loop(), &baton->request, Work_Tags, Work_AfterTags);
     } else {
         const unsigned int argc = 1;
         Local < Value > argv[1];
