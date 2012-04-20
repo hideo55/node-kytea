@@ -5,13 +5,15 @@
 	"repository": "https://github.com/hideo55/node-kytea",
 	"keywords": ["NLP"],
 	"author": "Hideaki Ohno <hide.o.j55@gmail.com>",
-	"dependencies": {},
+	"dependencies": {
+		"node-gyp": ""
+	},
 	"devDependencies": {},
 	"main": "./index.js",
 	"engines": {
-		"node": "0.6.x"
+		"node": ">=0.6.x"
 	},
 	"scripts": {
-		"install": "node-waf configure build"
+		"install": "node-gyp configure &&  build"
 	}
 }

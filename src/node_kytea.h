@@ -35,7 +35,7 @@ public:
         NodeKytea* kt;
 
         Baton(NodeKytea* kt_, v8::Handle<v8::Function> cb_) :
-            kt(kt_), status(ST_OK) {
+            status(ST_OK), kt(kt_) {
             kt->Ref();
             uv_ref( uv_default_loop());
             request.data = this;
