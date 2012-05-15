@@ -6,14 +6,10 @@
   "keywords": ["NLP"],
   "author": "Hideaki Ohno <hide.o.j55@gmail.com>",
   "dependencies": {
-    "node-gyp": ""
   },
   "devDependencies": {},
   "main": "./index.js",
   "engines": {
     "node": ">=0.6.x"
-  },
-  "scripts": {
-    "install": "node-gyp rebuild"
   }
 }
