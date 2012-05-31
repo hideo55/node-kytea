@@ -37,13 +37,11 @@ public:
         Baton(NodeKytea* kt_, v8::Handle<v8::Function> cb_) :
             status(ST_OK), kt(kt_) {
             kt->Ref();
-            uv_ref( uv_default_loop());
             request.data = this;
             callback = v8::Persistent<v8::Function>::New(cb_);
         }
         virtual ~Baton() {
             kt->Unref();
-            uv_unref( uv_default_loop());
             callback.Dispose();
         }
     };
