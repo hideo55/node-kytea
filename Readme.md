@@ -120,8 +120,7 @@ npm install kytea
 
 ```shell
 git clone git://github.com/hideo55/node-kytea.git
-cd node-kytea
-node-waf configure build
+npm install ./node-kytea
 ```
 
 ## License 
