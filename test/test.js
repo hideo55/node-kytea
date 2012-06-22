@@ -143,7 +143,7 @@ function tests(path) {
       kytea.getTags("2012年", function(err, res) {
         var expected = [{
           surf : '2012',
-          tags : [[['名詞', 1000]], [['にせんじゅうに', 100]]]
+          tags : [[['名詞', 100]], [['にせんじゅうに', 100]]]
         }, {
           surf : '年',
           tags : [[['接尾辞', 100]], [['ねん', 100]]]
