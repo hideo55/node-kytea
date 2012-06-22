@@ -7,9 +7,10 @@ function tests(path) {
   // Exception test
   (function() {
     var kytea = new Kytea('./path/notexists', function(err) {
-      assert( err instanceof Error);
+      assert( err instanceof Error );
       assert(err.message.match(/^Could not open model file \.\/path\/notexists$/));
     });
+
     kytea.getWS('hoge', function(err) {
       assert( err instanceof Error);
       assert(err.message.match(/^Model in not loaded$/));
@@ -80,6 +81,7 @@ function tests(path) {
       });
     }, /Option "enable_h2f" must be a boolean/);
   })();
+
   // normal analyze test
   (function() {
     var kytea = new Kytea(path, function() {
@@ -92,7 +94,7 @@ function tests(path) {
           tags : [[['代名詞', 100]], [['これ', 100]]]
         }, {
           surf : 'は',
-          tags : [[['助詞', 0.047801458212339325]], [['は', 100]]]
+          tags : [[['言いよどみ', 0.0478240381868515]], [['は', 100]]]
         }, {
           surf : 'テスト',
           tags : [[['名詞', 100]], [['てすと', 100]]]
@@ -124,7 +126,7 @@ function tests(path) {
           tags : [[['代名詞', 100]], [['これ', 100]]]
         }, {
           surf : 'は',
-          tags : [[['助詞', 0.047801458212339325], ['言いよどみ', 0]], [['は', 100]]]
+          tags : [[['言いよどみ', 0.04798240381868515], ['助詞', 0]], [['は', 100]]]
         }, {
           surf : 'テスト',
           tags : [[['名詞', 100]], [['てすと', 100]]]
@@ -141,7 +143,7 @@ function tests(path) {
       kytea.getTags("2012年", function(err, res) {
         var expected = [{
           surf : '2012',
-          tags : [[['UNK', 0]], [['UNK', 0]]]
+          tags : [[['名詞', 1000]], [['にせんじゅうに', 100]]]
         }, {
           surf : '年',
           tags : [[['接尾辞', 100]], [['ねん', 100]]]
@@ -183,4 +185,5 @@ function tests(path) {
       });
     });
   })();
+ 
 }

@@ -18,12 +18,12 @@ void NodeKytea::Init(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "getAllTags", getAllTags);
     NODE_SET_PROTOTYPE_METHOD(t, "isEnableHalf2Full", isEnableHalf2Full);
 
-    Persistent < Function > constructor = Persistent<Function>::New(t->GetFunction());
+    Persistent < Function > constructor = Persistent < Function > ::New(t->GetFunction());
     target->Set(String::NewSymbol("Kytea"), constructor);
 }
 
 NodeKytea::NodeKytea() :
-    kytea(NULL), isModelLoaded(false), enableH2F(true) {
+        kytea(NULL), isModelLoaded(false), enableH2F(true) {
 }
 
 NodeKytea::~NodeKytea() {
@@ -47,10 +47,10 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
 
     if (args.Length() == 2) {
         REQ_ARG_COUNT_AND_TYPE(1, Function);
-        cb = Local<Function>::Cast(args[1]);
+        cb = Local < Function > ::Cast(args[1]);
     } else if (args.Length() == 3) {
         REQ_OBJ_ARG(1);
-        Local < Object > opt = Local<Object>::Cast(args[1]);
+        Local < Object > opt = Local < Object > ::Cast(args[1]);
         ParseConfig(opt, config);
         if (opt->Has(String::New("enable_h2f"))) {
             Local < Value > _tmpval = opt->Get(String::New("enable_h2f"));
@@ -61,7 +61,7 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
             }
         }
         REQ_ARG_COUNT_AND_TYPE(2, Function);
-        cb = Local<Function>::Cast(args[2]);
+        cb = Local < Function > ::Cast(args[2]);
     } else {
         ThrowException(Exception::RangeError(String::New("Invalid Argument")));
     }
@@ -115,24 +115,27 @@ void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
 
 v8::Handle<v8::Value> NodeKytea::isEnableHalf2Full(const v8::Arguments& args) {
     v8::HandleScope scope;
-    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
+    NodeKytea* kt = Unwrap < NodeKytea > (args.Holder());
     return scope.Close(v8::Boolean::New(kt->enableH2F));
 }
 
 void NodeKytea::Work_ReadModel(uv_work_t* req) {
-    ReadBaton* baton = static_cast<ReadBaton*> (req->data);
+    ReadBaton* baton = static_cast<ReadBaton*>(req->data);
     NodeKytea* kt = baton->kt;
     try {
         kt->kytea->readModel(baton->filename.c_str());
-    } catch (std::exception &e) {
+    } catch (std::runtime_error& e) {
         baton->status = ST_FAIL;
         baton->message = e.what();
+    } catch(...){
+        baton->status = ST_FAIL;
+        baton->message = "Unknown error.";
     }
 }
 
 void NodeKytea::Work_AfterReadModel(uv_work_t* req) {
     HandleScope scope;
-    ReadBaton* baton = static_cast<ReadBaton*> (req->data);
+    ReadBaton* baton = static_cast<ReadBaton*>(req->data);
     NodeKytea* kt = baton->kt;
     std::string msg = baton->message;
 
@@ -142,7 +145,7 @@ void NodeKytea::Work_AfterReadModel(uv_work_t* req) {
         argv[0] = exception;
     } else {
         kt->isModelLoaded = true;
-        argv[0] = Local<Value>::New(Null());
+        argv[0] = Local < Value > ::New(Null());
     }
 
     if (!baton->callback.IsEmpty() && baton->callback->IsFunction()) {
@@ -157,7 +160,7 @@ Handle<Value> NodeKytea::getWS(const Arguments& args) {
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
+    NodeKytea* kt = Unwrap < NodeKytea > (args.Holder());
     if (kt->isModelLoaded) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
@@ -173,11 +176,12 @@ Handle<Value> NodeKytea::getWS(const Arguments& args) {
 }
 
 void NodeKytea::Work_WS(uv_work_t* req) {
-    WsBaton* baton = static_cast<WsBaton*> (req->data);
+    WsBaton* baton = static_cast<WsBaton*>(req->data);
     NodeKytea* kt = baton->kt;
     try {
         StringUtil* util = kt->kytea->getStringUtil();
-        KyteaSentence sentence(util->mapString(baton->sentence));
+        KyteaString word_str = util->mapString(baton->sentence);
+        KyteaSentence sentence(word_str, util->normalize(word_str));
         kt->kytea->calculateWS(sentence);
         baton->words = sentence.words;
     } catch (std::exception &e) {
@@ -188,7 +192,7 @@ void NodeKytea::Work_WS(uv_work_t* req) {
 
 void NodeKytea::Work_AfterWS(uv_work_t* req) {
     HandleScope scope;
-    WsBaton* baton = static_cast<WsBaton*> (req->data);
+    WsBaton* baton = static_cast<WsBaton*>(req->data);
     NodeKytea* kt = baton->kt;
     std::string msg = baton->message;
 
@@ -197,14 +201,14 @@ void NodeKytea::Work_AfterWS(uv_work_t* req) {
         Local < Value > exception = Exception::Error(v8::String::New(msg.c_str()));
         argv[0] = exception;
     } else {
-        argv[0] = Local<Value>::New(Null());
+        argv[0] = Local < Value > ::New(Null());
         KyteaSentence::Words words = baton->words;
         int word_num = words.size();
         Local < Array > res(Array::New(word_num));
         StringUtil* util = kt->kytea->getStringUtil();
         for (int i = 0; i < word_num; i++) {
             kytea::KyteaWord& w = words[i];
-            std::string surf = util->showString(w.surf);
+            std::string surf = util->showString(w.surface);
             res->Set(Integer::New(i), String::New(surf.c_str(), surf.size()));
         }
         argv[1] = res;
@@ -222,7 +226,7 @@ Handle<Value> NodeKytea::getTags(const Arguments& args) {
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
+    NodeKytea* kt = Unwrap < NodeKytea > (args.Holder());
     if (kt->isModelLoaded) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
@@ -243,7 +247,7 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
     REQ_STR_ARG(0);
     std::string sentence = *String::Utf8Value(args[0]->ToString());
     REQ_FUN_ARG(1, cb);
-    NodeKytea* kt = Unwrap<NodeKytea> (args.Holder());
+    NodeKytea* kt = Unwrap < NodeKytea > (args.Holder());
     if (kt->isModelLoaded) {
         kytea::KyteaConfig* config = kt->kytea->getConfig();
         config->setDoWS(true);
@@ -260,12 +264,13 @@ Handle<Value> NodeKytea::getAllTags(const Arguments& args) {
 }
 
 void NodeKytea::Work_Tags(uv_work_t* req) {
-    TagsBaton* baton = static_cast<TagsBaton*> (req->data);
+    TagsBaton* baton = static_cast<TagsBaton*>(req->data);
     NodeKytea* kt = baton->kt;
     try {
         StringUtil* util = kt->kytea->getStringUtil();
         KyteaConfig* config = kt->kytea->getConfig();
-        KyteaSentence sentence(util->mapString(baton->sentence));
+        KyteaString word_str = util->mapString(baton->sentence);
+        KyteaSentence sentence(word_str, util->normalize(word_str));
         kt->kytea->calculateWS(sentence);
 
         for (int i = 0; i < config->getNumTags(); i++) {
@@ -282,7 +287,7 @@ void NodeKytea::Work_Tags(uv_work_t* req) {
 
 void NodeKytea::Work_AfterTags(uv_work_t* req) {
     HandleScope scope;
-    TagsBaton* baton = static_cast<TagsBaton*> (req->data);
+    TagsBaton* baton = static_cast<TagsBaton*>(req->data);
     NodeKytea* kt = baton->kt;
     KyteaConfig* config = kt->kytea->getConfig();
     std::string msg = baton->message;
@@ -292,7 +297,7 @@ void NodeKytea::Work_AfterTags(uv_work_t* req) {
         Local < Value > exception = Exception::Error(v8::String::New(msg.c_str()));
         argv[0] = exception;
     } else {
-        argv[0] = Local<Value>::New(Null());
+        argv[0] = Local < Value > ::New(Null());
         KyteaSentence::Words words = baton->words;
         int word_num = words.size();
         Local < Array > res(Array::New(word_num));
@@ -300,7 +305,7 @@ void NodeKytea::Work_AfterTags(uv_work_t* req) {
 
         for (int i = 0; i < word_num; i++) {
             kytea::KyteaWord& w = words[i];
-            std::string surf = util->showString(w.surf);
+            std::string surf = util->showString(w.surface);
             Local < Object > elm = Object::New();
             elm->Set(String::New("surf"), String::New(surf.c_str(), surf.size()));
 

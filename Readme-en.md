@@ -102,9 +102,9 @@ kytea.getAllTags("これはテストです。", function(err, res){
 ## Requirement
 
 * Node >= v0.6.13
-* KyTea >= 0.4.0
+* KyTea >= 0.4.2
 
-node-kytea is verifying with KyTea 0.4.0. 
+node-kytea is verifying with KyTea 0.4.2. 
 Please download and install KyTea before installation. 
 
 ## Install
