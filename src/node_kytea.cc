@@ -127,9 +127,6 @@ void NodeKytea::Work_ReadModel(uv_work_t* req) {
     } catch (std::runtime_error& e) {
         baton->status = ST_FAIL;
         baton->message = e.what();
-    } catch(...){
-        baton->status = ST_FAIL;
-        baton->message = "Unknown error.";
     }
 }
 
