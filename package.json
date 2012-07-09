@@ -8,12 +8,14 @@
   "author": "Hideaki Ohno <hide.o.j55@gmail.com>",
   "dependencies": {
   },
-  "devDependencies": {},
+  "devDependencies": {
+  	"nodenit": ""
+  },
   "main": "./index.js",
   "engines": {
     "node": ">=0.6.13"
   },
   "scripts": {
-  	"test" : "node test/test.js"
+  	"test" : "nodeunit test/test.js"
   }
 }
