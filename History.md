@@ -1,3 +1,9 @@
+0.0.6 / 2012-07-10
+==================
+
+  * Remove 'enable_h2f' option because KyTea 0.4.2 supports narmalize of half width characters.
+  * Tests improvemnt.
+
 0.0.5 / 2012-06-23
 ==================
 
