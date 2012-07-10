@@ -38,7 +38,6 @@ Load model that specified by `modelPath`, and create KyTea object.
   * `deftag`: A tag for words that cannot be given any tag.(for example, unknown words that contain a character not in the subword dictionary)(Default: 'UNK')
   * `unkbeam`: The width of the beam to use in beam search for unknown words.(Default: 50)
   * `unktag`: A tag to append to indicate words not in the dictionary.(Default: '')
-  * `enable_h2f`: A half width character convert to full width character.(Default: true)
 * `callback`: The function called when reading of the model file is completed.
 
 ### getWS(text, callback)

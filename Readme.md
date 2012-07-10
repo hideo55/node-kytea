@@ -38,7 +38,6 @@ var kytea = new Kytea(path, { tagmax: 3 }, function(err){
   * `deftag`: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(Default: 'UNK')
   * `unkbeam`: 未知語の読み推定で利用するビーム幅。(Default: 50)
   * `unktag`: 辞書に存在しない単語に付与されるタグ。(Default: '')
-  * `enable_h2f`: 半角文字を全角に変換して解析します。(Default: true)
 * `callback`: モデルの読み込みが完了した時点でこの関数が呼ばれます。
 
 ### getWS(text, callback)
