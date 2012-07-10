@@ -9,13 +9,13 @@
   "dependencies": {
   },
   "devDependencies": {
-  	"nodenit": ""
+  	"nodeunit": "0.7.4"
   },
   "main": "./index.js",
   "engines": {
     "node": ">=0.6.13"
   },
   "scripts": {
-  	"test" : "nodeunit test/test.js"
+  	"test" : "nodeunit --reporter tap test/test.js"
   }
 }

@@ -16,14 +16,13 @@ void NodeKytea::Init(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "getWS", getWS);
     NODE_SET_PROTOTYPE_METHOD(t, "getTags", getTags);
     NODE_SET_PROTOTYPE_METHOD(t, "getAllTags", getAllTags);
-    NODE_SET_PROTOTYPE_METHOD(t, "isEnableHalf2Full", isEnableHalf2Full);
 
     Persistent < Function > constructor = Persistent < Function > ::New(t->GetFunction());
     target->Set(String::NewSymbol("Kytea"), constructor);
 }
 
 NodeKytea::NodeKytea() :
-        kytea(NULL), isModelLoaded(false), enableH2F(true) {
+        kytea(NULL), isModelLoaded(false) {
 }
 
 NodeKytea::~NodeKytea() {
@@ -52,14 +51,6 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
         REQ_OBJ_ARG(1);
         Local < Object > opt = Local < Object > ::Cast(args[1]);
         ParseConfig(opt, config);
-        if (opt->Has(String::New("enable_h2f"))) {
-            Local < Value > _tmpval = opt->Get(String::New("enable_h2f"));
-            if (_tmpval->IsBoolean()) {
-                obj->enableH2F = _tmpval->ToBoolean()->Value();
-            } else {
-                ThrowException(Exception::TypeError(String::New("Option \"enable_h2f\" must be a boolean")));
-            }
-        }
         REQ_ARG_COUNT_AND_TYPE(2, Function);
         cb = Local < Function > ::Cast(args[2]);
     } else {
@@ -111,12 +102,6 @@ void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
             ThrowException(Exception::TypeError(String::New("Option \"notag\" must be a array of integer")));
         }
     }
-}
-
-v8::Handle<v8::Value> NodeKytea::isEnableHalf2Full(const v8::Arguments& args) {
-    v8::HandleScope scope;
-    NodeKytea* kt = Unwrap < NodeKytea > (args.Holder());
-    return scope.Close(v8::Boolean::New(kt->enableH2F));
 }
 
 void NodeKytea::Work_ReadModel(uv_work_t* req) {

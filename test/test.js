@@ -28,35 +28,31 @@ exports['exception_test'] = function(test) {
   var kytea = new Kytea('./path/notexists', function(err) {
     testSeries([
     function(next) {
-      test.ok( err instanceof Error);
-      test.ok(err.message.match(/^Could not open model file \.\/path\/notexists$/));
+      test.ok(err.message.match(/^Could not open model file \.\/path\/notexists$/),"Model opne error");
       next();
     },
     function(next) {
       kytea.getWS('hoge', function(err) {
-        test.ok( err instanceof Error);
-        test.ok(err.message.match(/^Model in not loaded$/));
+        test.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getWS()");
         next();
       });
     },
     function(next) {
       kytea.getTags('hoge', function(err) {
-        test.ok( err instanceof Error);
-        test.ok(err.message.match(/^Model in not loaded$/));
+        test.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getTags()");
         next();
       });
     },
     function(next) {
       kytea.getAllTags('hoge', function(err) {
-        test.ok( err instanceof Error);
-        test.ok(err.message.match(/^Model in not loaded$/));
+        test.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getAllTags()");
         next();
       });
     },
     function(next) {
       test.throws(function() {
         new Kytea(path);
-      }, /Invalid Argument/);
+      }, /Invalid Argument/, "Instantiate without callback function");
       next();
     },
     function(next) {
@@ -65,7 +61,7 @@ exports['exception_test'] = function(test) {
           notag : 1
         }, function() {
         });
-      }, /Option "notag" must be a array of integer/);
+      }, /Option "notag" must be a array of integer/, "'notag' value type invalid. Pattern - not Array");
       next();
     },
     function(next) {
@@ -74,7 +70,7 @@ exports['exception_test'] = function(test) {
           notag : ['foo']
         }, function() {
         });
-      }, /Option "notag" must be a array of integer/);
+      }, /Option "notag" must be a array of integer/, "'notag' value type invalid. Pattern - Array element is not Interger");
       next();
     },
     function(next) {
@@ -83,7 +79,7 @@ exports['exception_test'] = function(test) {
           notag : [0]
         }, function() {
         });
-      }, /Illegal setting for "notag" \(must be 1 or greater\)/);
+      }, /Illegal setting for "notag" \(must be 1 or greater\)/, "'notag' value type invalid. Pattern- Array element less than 1");
       next();
     },
     function(next) {
@@ -92,7 +88,7 @@ exports['exception_test'] = function(test) {
           tagmax : "foo"
         }, function() {
         });
-      }, /Option "tagmax" must be a Integer/);
+      }, /Option "tagmax" must be a Integer/, "'tagmax' value type invalid. Pattern - not Integer");
       next();
     },
     function(next) {
@@ -101,7 +97,7 @@ exports['exception_test'] = function(test) {
           unkbeam : "foo"
         }, function() {
         });
-      }, /Option "unkbeam" must be a Integer/);
+      }, /Option "unkbeam" must be a Integer/, "'unkbeam' value type invalid. Pattern - not Integer");
       next();
     },
     function(next) {
@@ -110,7 +106,7 @@ exports['exception_test'] = function(test) {
           deftag : 1
         }, function() {
         });
-      }, /Option "deftag" must be a String/);
+      }, /Option "deftag" must be a String/, "'deftag' value type invalid. Pattern - not String");
       next();
     },
     function(next) {
@@ -119,7 +115,7 @@ exports['exception_test'] = function(test) {
           unktag : 1
         }, function() {
         });
-      }, /Option "unktag" must be a String/);
+      }, /Option "unktag" must be a String/, "'unktag' value type invalid. Pattern - not Integer");
       next();
     },
     function(next) {
@@ -128,16 +124,7 @@ exports['exception_test'] = function(test) {
           nounk : 1
         }, function() {
         });
-      }, /Option "nounk" must be a Boolean/);
-      next();
-    },
-    function(next) {
-      test.throws(function() {
-        new Kytea(path, {
-          enable_h2f : 1
-        }, function() {
-        });
-      }, /Option "enable_h2f" must be a boolean/);
+      }, /Option "nounk" must be a Boolean/, "'nounk' value type invalid. Pattern - not Boolean");
       test.done();
     }]);
   });
@@ -149,7 +136,7 @@ exports['normal_test'] = function(test) {
     testSeries([
     function(next) {
       kytea.getWS("これはテストです。", function(err, res) {
-        test.deepEqual(res, ['これ', 'は', 'テスト', 'で', 'す', '。']);
+        test.deepEqual(res, ['これ', 'は', 'テスト', 'で', 'す', '。'], "getWS() test");
         next();
       });
     },
@@ -175,7 +162,7 @@ exports['normal_test'] = function(test) {
           surf : '。',
           tags : [[['補助記号', 100]], [['。', 100]]]
         }];
-        test.deepEqual(res, expected);
+        test.deepEqual(res, expected, "getTags() test - normal");
         next();
       });
     },
@@ -188,7 +175,7 @@ exports['normal_test'] = function(test) {
           surf : '年',
           tags : [[['接尾辞', 100]], [['ねん', 100]]]
         }];
-        test.deepEqual(res, expected);
+        test.deepEqual(res, expected, "getTags() test - number analyze");
         next();
       });
     },
@@ -204,28 +191,10 @@ exports['normal_test'] = function(test) {
           surf : 'テスト',
           tags : [[['名詞', 100]], [['てすと', 100]]]
         }];
-        test.deepEqual(res, expected);
+        test.deepEqual(res, expected, "getAllTags() test");
         test.done();
       });
     }]);
-  });
-};
-//enable_h2f => false
-exports["enable_h2f_test"] = function(test) {
-  var kytea = new Kytea(path, {
-    enable_h2f : false
-  }, function() {
-    kytea.getTags("2012年", function(err, res) {
-      var expected = [{
-        surf : '2012',
-        tags : [[['名詞', 100]], [['にせんじゅうに', 100]]]
-      }, {
-        surf : '年',
-        tags : [[['接尾辞', 100]], [['ねん', 100]]]
-      }];
-      test.deepEqual(res, expected);
-      test.done();
-    });
   });
 };
 
@@ -244,7 +213,7 @@ exports['notag_test'] = function(test) {
           surf : '年',
           tags : [[], [['ねん', 100]]]
         }];
-        test.deepEqual(res, expected);
+        test.deepEqual(res, expected, "notag test1");
         next();
       });
     });
@@ -253,7 +222,6 @@ exports['notag_test'] = function(test) {
     var kytea2 = new Kytea(path, {
       notag : [2]
     }, function(err) {
-      test.equal(err, undefined);
       kytea2.getTags("2012年", function(err, res) {
         var expected = [{
           surf : '2012',
@@ -262,7 +230,7 @@ exports['notag_test'] = function(test) {
           surf : '年',
           tags : [[['接尾辞', 100]]]
         }];
-        test.deepEqual(res, expected);
+        test.deepEqual(res, expected, "notag test2");
         test.done();
       });
     });
