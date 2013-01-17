@@ -1,8 +1,11 @@
 #ifndef NODE_KYTEA_ANALYZER_H_
 #define NODE_KYTEA_ANALYZER_H_
+#ifndef BUILDING_NODE_EXTENSION
 #define BUILDING_NODE_EXTENSION
+#endif
 #include <v8.h>
 #include <node.h>
+#include <node_version.h>
 #include <string>
 #include <tr1/unordered_map>
 #include <utility>
@@ -73,11 +76,17 @@ private:
 
     static void ParseConfig(v8::Handle<v8::Object> opt, kytea::KyteaConfig *config);
     static void Work_ReadModel(uv_work_t* req);
-    static void Work_AfterReadModel(uv_work_t* req);
     static void Work_WS(uv_work_t* req);
-    static void Work_AfterWS(uv_work_t* req);
     static void Work_Tags(uv_work_t* req);
+#if NODE_VERSION_AT_LEAST(0,9,4)
+    static void Work_AfterReadModel(uv_work_t* req, int status);
+    static void Work_AfterWS(uv_work_t* req, int status);
+    static void Work_AfterTags(uv_work_t* req, int status);
+#else
+    static void Work_AfterReadModel(uv_work_t* req);
+    static void Work_AfterWS(uv_work_t* req);
     static void Work_AfterTags(uv_work_t* req);
+#endif
 };
 
 }

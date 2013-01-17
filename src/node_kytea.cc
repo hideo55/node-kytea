@@ -1,4 +1,3 @@
-#define BUILDING_NODE_EXTENSION
 #include "node_kytea.h"
 #include "macros.h"
 
@@ -115,7 +114,11 @@ void NodeKytea::Work_ReadModel(uv_work_t* req) {
     }
 }
 
+#if NODE_VERSION_AT_LEAST(0,9,4)
+void NodeKytea::Work_AfterReadModel(uv_work_t* req, int status) {
+#else
 void NodeKytea::Work_AfterReadModel(uv_work_t* req) {
+#endif
     HandleScope scope;
     ReadBaton* baton = static_cast<ReadBaton*>(req->data);
     NodeKytea* kt = baton->kt;
@@ -172,7 +175,11 @@ void NodeKytea::Work_WS(uv_work_t* req) {
     }
 }
 
+#if NODE_VERSION_AT_LEAST(0,9,4)
+void NodeKytea::Work_AfterWS(uv_work_t* req, int status) {
+#else
 void NodeKytea::Work_AfterWS(uv_work_t* req) {
+#endif
     HandleScope scope;
     WsBaton* baton = static_cast<WsBaton*>(req->data);
     NodeKytea* kt = baton->kt;
@@ -267,7 +274,11 @@ void NodeKytea::Work_Tags(uv_work_t* req) {
     }
 }
 
+#if NODE_VERSION_AT_LEAST(0,9,4)
+void NodeKytea::Work_AfterTags(uv_work_t* req, int status) {
+#else
 void NodeKytea::Work_AfterTags(uv_work_t* req) {
+#endif
     HandleScope scope;
     TagsBaton* baton = static_cast<TagsBaton*>(req->data);
     NodeKytea* kt = baton->kt;
