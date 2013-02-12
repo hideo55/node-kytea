@@ -346,4 +346,4 @@ void Initialize(v8::Handle<v8::Object> target) {
 }
 }
 
-NODE_MODULE(kytea, Initialize);
+NODE_MODULE(kytea, Initialize)
