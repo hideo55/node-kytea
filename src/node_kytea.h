@@ -7,7 +7,8 @@
 #include <node.h>
 #include <node_version.h>
 #include <string>
-#include <tr1/unordered_map>
+#include <memory>
+#include <tr1/memory>
 #include <utility>
 #include "kytea/kytea.h"
 #include "kytea/kytea-struct.h"
@@ -71,7 +72,7 @@ public:
     };
 
 private:
-    kytea::Kytea* kytea;
+    std::tr1::shared_ptr<kytea::Kytea> kytea;
     bool isModelLoaded;
 
     static void ParseConfig(v8::Handle<v8::Object> opt, kytea::KyteaConfig *config);

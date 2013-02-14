@@ -6,6 +6,10 @@ using namespace v8;
 using namespace node;
 using namespace kytea;
 
+namespace std {
+using namespace tr1;
+}
+
 void NodeKytea::Init(Handle<Object> target) {
     HandleScope scope;
     Local < FunctionTemplate > t = FunctionTemplate::New(New);
@@ -21,13 +25,10 @@ void NodeKytea::Init(Handle<Object> target) {
 }
 
 NodeKytea::NodeKytea() :
-        kytea(NULL), isModelLoaded(false) {
+        isModelLoaded(false) {
 }
 
 NodeKytea::~NodeKytea() {
-    if (kytea != NULL) {
-        delete kytea;
-    }
 }
 
 Handle<Value> NodeKytea::New(const Arguments& args) {
@@ -39,7 +40,9 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
     Local < Function > cb;
 
     NodeKytea* obj = new NodeKytea();
-    obj->kytea = new Kytea();
+    obj->Wrap(args.Holder());
+    std::shared_ptr < Kytea > ptr(new Kytea());
+    obj->kytea = ptr;
 
     kytea::KyteaConfig* config = obj->kytea->getConfig();
 
@@ -55,13 +58,12 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
     } else {
         ThrowException(Exception::RangeError(String::New("Invalid Argument")));
     }
+
     config->setOnTraining(false);
-
     config->setDoTags(true);
-    for (int i = 0; i < config->getNumTags(); i++)
+    for (int i = 0; i < config->getNumTags(); i++) {
         config->setDoTag(i, true);
-
-    obj->Wrap(args.Holder());
+    }
 
     ReadBaton* baton = new ReadBaton(obj, cb, filename);
     uv_queue_work(uv_default_loop(), &baton->request, Work_ReadModel, Work_AfterReadModel);
@@ -120,7 +122,7 @@ void NodeKytea::Work_AfterReadModel(uv_work_t* req, int status) {
 void NodeKytea::Work_AfterReadModel(uv_work_t* req) {
 #endif
     HandleScope scope;
-    ReadBaton* baton = static_cast<ReadBaton*>(req->data);
+    std::auto_ptr<ReadBaton> baton = std::auto_ptr < ReadBaton > (static_cast<ReadBaton*>(req->data));
     NodeKytea* kt = baton->kt;
     std::string msg = baton->message;
 
@@ -136,8 +138,6 @@ void NodeKytea::Work_AfterReadModel(uv_work_t* req) {
     if (!baton->callback.IsEmpty() && baton->callback->IsFunction()) {
         TRY_CATCH_CALL(kt->handle_, baton->callback, 1, argv);
     }
-
-    delete baton;
 }
 
 Handle<Value> NodeKytea::getWS(const Arguments& args) {
@@ -181,7 +181,7 @@ void NodeKytea::Work_AfterWS(uv_work_t* req, int status) {
 void NodeKytea::Work_AfterWS(uv_work_t* req) {
 #endif
     HandleScope scope;
-    WsBaton* baton = static_cast<WsBaton*>(req->data);
+    std::auto_ptr<WsBaton> baton = std::auto_ptr < WsBaton > (static_cast<WsBaton*>(req->data));
     NodeKytea* kt = baton->kt;
     std::string msg = baton->message;
 
@@ -206,8 +206,6 @@ void NodeKytea::Work_AfterWS(uv_work_t* req) {
     if (!baton->callback.IsEmpty() && baton->callback->IsFunction()) {
         TRY_CATCH_CALL(kt->handle_, baton->callback, 2, argv);
     }
-
-    delete baton;
 }
 
 Handle<Value> NodeKytea::getTags(const Arguments& args) {
@@ -280,7 +278,7 @@ void NodeKytea::Work_AfterTags(uv_work_t* req, int status) {
 void NodeKytea::Work_AfterTags(uv_work_t* req) {
 #endif
     HandleScope scope;
-    TagsBaton* baton = static_cast<TagsBaton*>(req->data);
+    std::auto_ptr<TagsBaton> baton = std::auto_ptr < TagsBaton > (static_cast<TagsBaton*>(req->data));
     NodeKytea* kt = baton->kt;
     KyteaConfig* config = kt->kytea->getConfig();
     std::string msg = baton->message;
@@ -336,7 +334,6 @@ void NodeKytea::Work_AfterTags(uv_work_t* req) {
         TRY_CATCH_CALL(kt->handle_, baton->callback, 2, argv);
     }
 
-    delete baton;
 }
 
 namespace {
