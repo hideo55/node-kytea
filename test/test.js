@@ -1,4 +1,5 @@
 var Kytea = require('../index').Kytea;
+var assert = require('assert');
 
 var path = '' + __dirname + '/data/test.mod';
 
@@ -24,39 +25,39 @@ var testSeries = function(tests) {
 };
 
 // Exception test
-exports['exception_test'] = function(test) {
+exports['exception_test'] = function(done) {
   var kytea = new Kytea('./path/notexists', function(err) {
     testSeries([
     function(next) {
-      test.ok(err.message.match(/^Could not open model file \.\/path\/notexists$/),"Model opne error");
+      assert.ok(err.message.match(/^Could not open model file \.\/path\/notexists$/),"Model opne error");
       next();
     },
     function(next) {
       kytea.getWS('hoge', function(err) {
-        test.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getWS()");
+        assert.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getWS()");
         next();
       });
     },
     function(next) {
       kytea.getTags('hoge', function(err) {
-        test.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getTags()");
+        assert.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getTags()");
         next();
       });
     },
     function(next) {
       kytea.getAllTags('hoge', function(err) {
-        test.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getAllTags()");
+        assert.ok(err.message.match(/^Model in not loaded$/), "Model unloaded error in getAllTags()");
         next();
       });
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path);
       }, /Invalid Argument/, "Instantiate without callback function");
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           notag : 1
         }, function() {
@@ -65,7 +66,7 @@ exports['exception_test'] = function(test) {
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           notag : ['foo']
         }, function() {
@@ -74,7 +75,7 @@ exports['exception_test'] = function(test) {
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           notag : [0]
         }, function() {
@@ -83,7 +84,7 @@ exports['exception_test'] = function(test) {
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           tagmax : "foo"
         }, function() {
@@ -92,7 +93,7 @@ exports['exception_test'] = function(test) {
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           unkbeam : "foo"
         }, function() {
@@ -101,7 +102,7 @@ exports['exception_test'] = function(test) {
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           deftag : 1
         }, function() {
@@ -110,7 +111,7 @@ exports['exception_test'] = function(test) {
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           unktag : 1
         }, function() {
@@ -119,24 +120,24 @@ exports['exception_test'] = function(test) {
       next();
     },
     function(next) {
-      test.throws(function() {
+      assert.throws(function() {
         new Kytea(path, {
           nounk : 1
         }, function() {
         });
       }, /Option "nounk" must be a Boolean/, "'nounk' value type invalid. Pattern - not Boolean");
-      test.done();
+      done();
     }]);
   });
 };
 
 // normal analyze test
-exports['normal_test'] = function(test) {
+exports['normal_test'] = function(done) {
   var kytea = new Kytea(path, function() {
     testSeries([
     function(next) {
       kytea.getWS("これはテストです。", function(err, res) {
-        test.deepEqual(res, ['これ', 'は', 'テスト', 'で', 'す', '。'], "getWS() test");
+        assert.deepEqual(res, ['これ', 'は', 'テスト', 'で', 'す', '。'], "getWS() test");
         next();
       });
     },
@@ -162,7 +163,7 @@ exports['normal_test'] = function(test) {
           surf : '。',
           tags : [[['補助記号', 100]], [['。', 100]]]
         }];
-        test.deepEqual(res, expected, "getTags() test - normal");
+        assert.deepEqual(res, expected, "getTags() test - normal");
         next();
       });
     },
@@ -175,7 +176,7 @@ exports['normal_test'] = function(test) {
           surf : '年',
           tags : [[['接尾辞', 100]], [['ねん', 100]]]
         }];
-        test.deepEqual(res, expected, "getTags() test - number analyze");
+        assert.deepEqual(res, expected, "getTags() test - number analyze");
         next();
       });
     },
@@ -191,15 +192,15 @@ exports['normal_test'] = function(test) {
           surf : 'テスト',
           tags : [[['名詞', 100]], [['てすと', 100]]]
         }];
-        test.deepEqual(res, expected, "getAllTags() test");
-        test.done();
+        assert.deepEqual(res, expected, "getAllTags() test");
+        done();
       });
     }]);
   });
 };
 
 //notag test
-exports['notag_test'] = function(test) {
+exports['notag_test'] = function(done) {
   testSeries([
   function(next) {
     var kytea = new Kytea(path, {
@@ -213,7 +214,7 @@ exports['notag_test'] = function(test) {
           surf : '年',
           tags : [[], [['ねん', 100]]]
         }];
-        test.deepEqual(res, expected, "notag test1");
+        assert.deepEqual(res, expected, "notag test1");
         next();
       });
     });
@@ -230,8 +231,8 @@ exports['notag_test'] = function(test) {
           surf : '年',
           tags : [[['接尾辞', 100]]]
         }];
-        test.deepEqual(res, expected, "notag test2");
-        test.done();
+        assert.deepEqual(res, expected, "notag test2");
+        done();
       });
     });
   }]);
