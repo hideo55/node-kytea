@@ -1,3 +1,9 @@
+0.1.4 / 2013-02-28
+==================
+
+  * Update document about tested version of KyTea
+  * Add include file for some environment
+
 0.1.3 / 2013-02-21
 ==================
 
