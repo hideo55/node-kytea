@@ -10,6 +10,7 @@
 #include <memory>
 #include <tr1/memory>
 #include <utility>
+#include <stdexcept>
 #include "kytea/kytea.h"
 #include "kytea/kytea-struct.h"
 
