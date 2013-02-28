@@ -7,12 +7,16 @@
 #include <node.h>
 #include <node_version.h>
 #include <string>
+#include <vector>
 #include <memory>
 #include <tr1/memory>
 #include <utility>
 #include <stdexcept>
-#include "kytea/kytea.h"
-#include "kytea/kytea-struct.h"
+#include <kytea/kytea-model.h>
+#include <kytea/dictionary.h>
+#include <kytea/kytea.h>
+#include <kytea/kytea-struct.h>
+#include <kytea/string-util.h>
 
 namespace node_kytea {
 
@@ -75,6 +79,7 @@ public:
 private:
     std::tr1::shared_ptr<kytea::Kytea> kytea;
     bool isModelLoaded;
+    kytea::StringUtil* util;
 
     static void ParseConfig(v8::Handle<v8::Object> opt, kytea::KyteaConfig *config);
     static void Work_ReadModel(uv_work_t* req);

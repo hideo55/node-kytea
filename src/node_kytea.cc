@@ -43,6 +43,7 @@ Handle<Value> NodeKytea::New(const Arguments& args) {
     obj->Wrap(args.Holder());
     std::shared_ptr < Kytea > ptr(new Kytea());
     obj->kytea = ptr;
+    obj->util = ptr->getStringUtil();
 
     kytea::KyteaConfig* config = obj->kytea->getConfig();
 
