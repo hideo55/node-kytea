@@ -20,7 +20,7 @@ void NodeKytea::Init(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "getTags", getTags);
     NODE_SET_PROTOTYPE_METHOD(t, "getAllTags", getAllTags);
 
-    Persistent < Function > constructor = Persistent < Function > ::New(t->GetFunction());
+    Persistent < Function > constructor = Persistent < Function > ::New(__GET_ISOLATE_FOR_NEW t->GetFunction());
     target->Set(String::NewSymbol("Kytea"), constructor);
 }
 

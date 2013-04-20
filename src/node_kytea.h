@@ -18,6 +18,14 @@
 #include <kytea/kytea-struct.h>
 #include <kytea/string-util.h>
 
+#if NODE_VERSION_AT_LEAST(0,11,0)
+#define __GET_ISOLATE_FOR_NEW v8::Isolate::GetCurrent(),
+#define __GET_ISOLATE_FOR_DISPOSE v8::Isolate::GetCurrent()
+#else
+#define __GET_ISOLATE_FOR_NEW
+#define __GET_ISOLATE_FOR_DISPOSE
+#endif
+
 namespace node_kytea {
 
 class NodeKytea: node::ObjectWrap {
@@ -46,11 +54,11 @@ public:
             status(ST_OK), kt(kt_) {
             kt->Ref();
             request.data = this;
-            callback = v8::Persistent<v8::Function>::New(cb_);
+            callback = v8::Persistent<v8::Function>::New(__GET_ISOLATE_FOR_NEW cb_);
         }
         virtual ~Baton() {
             kt->Unref();
-            callback.Dispose();
+            callback.Dispose(__GET_ISOLATE_FOR_DISPOSE);
         }
     };
 
