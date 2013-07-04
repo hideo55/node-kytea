@@ -104,7 +104,7 @@ kytea.getAllTags("これはテストです。", function(err, res){
 * Node >= v0.6.13
 * KyTea >= 0.4.2
 
-node-kytea は KyTea 0.4.2/0.4.3 での動作を確認しています。
+最新の node-kytea は KyTea 0.4.6 での動作を確認しています。
 インストールの前に、[こちら](http://www.phontron.com/kytea/index-ja.html)から KyTea をダウンロードして、インストールしてください。
 
 ## Install
