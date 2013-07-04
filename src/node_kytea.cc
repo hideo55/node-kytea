@@ -14,7 +14,7 @@ void NodeKytea::Init(Handle<Object> target) {
     HandleScope scope;
     Local < FunctionTemplate > t = FunctionTemplate::New(New);
     t->SetClassName(String::NewSymbol("Kytea"));
-    t->InstanceTemplate()->SetInternalFieldCount(4);
+    t->InstanceTemplate()->SetInternalFieldCount(1);
 
     NODE_SET_PROTOTYPE_METHOD(t, "getWS", getWS);
     NODE_SET_PROTOTYPE_METHOD(t, "getTags", getTags);
