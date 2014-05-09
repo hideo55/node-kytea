@@ -2,11 +2,12 @@
   'targets': [
     {
       'target_name': 'kytea',
-      'sources': ['src/node_kytea.cc'],
+      'sources': ['src/node_kytea.cc', 'src/node_kytea_async.cc'],
+      'include_dirs': ["<!(node -e \"require('nan')\")"],
       'cflags': ['-fexceptions'],
       'cflags_cc': ['-fexceptions'],
-      'cflags!': ['-fno-exceptions'],
-      'cflags_cc!': ['-fno-exception'],
+      'cflags!': ['-fno-exceptions', '-fno-rtti'],
+      'cflags_cc!': ['-fno-exception', '-fno-rtti'],
       'libraries': ['-lkytea'],
       'conditions': [
         ['OS=="mac"', {

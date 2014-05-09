@@ -2,3 +2,4 @@ build
 /.settings
 /.lock-wscript
 /.project
+node_modules/

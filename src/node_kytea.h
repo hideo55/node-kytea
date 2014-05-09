@@ -3,105 +3,46 @@
 #ifndef BUILDING_NODE_EXTENSION
 #define BUILDING_NODE_EXTENSION
 #endif
-#include <v8.h>
-#include <node.h>
-#include <node_version.h>
+
+#include "nan.h"
 #include <string>
 #include <vector>
-#include <memory>
-#include <tr1/memory>
-#include <utility>
-#include <stdexcept>
 #include <kytea/kytea-model.h>
 #include <kytea/dictionary.h>
 #include <kytea/kytea.h>
 #include <kytea/kytea-struct.h>
 #include <kytea/string-util.h>
 
-#if NODE_VERSION_AT_LEAST(0,11,0)
-#define __GET_ISOLATE_FOR_NEW v8::Isolate::GetCurrent(),
-#define __GET_ISOLATE_FOR_DISPOSE v8::Isolate::GetCurrent()
-#else
-#define __GET_ISOLATE_FOR_NEW
-#define __GET_ISOLATE_FOR_DISPOSE
-#endif
-
 namespace node_kytea {
 
-class NodeKytea: node::ObjectWrap {
+class NodeKytea: public node::ObjectWrap {
 public:
     NodeKytea();
     ~NodeKytea();
 
-    static void Init(v8::Handle<v8::Object> target);
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> getWS(const v8::Arguments& args);
-    static v8::Handle<v8::Value> getTags(const v8::Arguments& args);
-    static v8::Handle<v8::Value> getAllTags(const v8::Arguments& args);
+    static void Init(v8::Handle<v8::Object> exports);
+    static NAN_METHOD(New);
+    static NAN_METHOD(Open);
+    static NAN_METHOD(getWS);
+    static NAN_METHOD(getTags);
+    static NAN_METHOD(getAllTags);
 
-    enum StatusType {
-        ST_OK, ST_FAIL
-    };
+    void openModel(std::string& filename);
 
-    struct Baton {
-        uv_work_t request;
-        v8::Persistent<v8::Function> callback;
-        StatusType status;
-        std::string message;
-        NodeKytea* kt;
+    void calculateWS(std::string& text, kytea::KyteaSentence::Words& words);
 
-        Baton(NodeKytea* kt_, v8::Handle<v8::Function> cb_) :
-            status(ST_OK), kt(kt_) {
-            kt->Ref();
-            request.data = this;
-            callback = v8::Persistent<v8::Function>::New(__GET_ISOLATE_FOR_NEW cb_);
-        }
-        virtual ~Baton() {
-            kt->Unref();
-            callback.Dispose(__GET_ISOLATE_FOR_DISPOSE);
-        }
-    };
+    void calculateTags(std::string& text, kytea::KyteaSentence::Words& words);
 
-    struct ReadBaton: Baton {
-        std::string filename;
-        ReadBaton(NodeKytea* kt_, v8::Handle<v8::Function> cb_, std::string filename_) :
-            Baton(kt_, cb_), filename(filename_) {
-        }
-    };
+    void MakeWsResult(kytea::KyteaSentence::Words& words, v8::Local<v8::Array>& result);
 
-    struct WsBaton: Baton {
-        std::string sentence;
-        kytea::KyteaSentence::Words words;
-        WsBaton(NodeKytea* kt_, v8::Handle<v8::Function> cb_, std::string sentence_) :
-            Baton(kt_, cb_), sentence(sentence_) {
-        }
-    };
-
-    struct TagsBaton: WsBaton {
-        bool all;
-        TagsBaton(NodeKytea* kt_, v8::Handle<v8::Function> cb_, std::string sentence_, bool all_ = false) :
-            WsBaton(kt_, cb_, sentence_), all(all_) {
-        }
-    };
+    void MakeTagsResult(kytea::KyteaSentence::Words& words, v8::Local<v8::Array>& result, bool all);
 
 private:
-    std::tr1::shared_ptr<kytea::Kytea> kytea;
-    bool isModelLoaded;
-    kytea::StringUtil* util;
+    static v8::Persistent<v8::FunctionTemplate> constructor_template;
+    kytea::Kytea* kytea_;
+    bool isModelLoaded_;
 
     static void ParseConfig(v8::Handle<v8::Object> opt, kytea::KyteaConfig *config);
-    static void Work_ReadModel(uv_work_t* req);
-    static void Work_WS(uv_work_t* req);
-    static void Work_Tags(uv_work_t* req);
-#if NODE_VERSION_AT_LEAST(0,9,4)
-    static void Work_AfterReadModel(uv_work_t* req, int status);
-    static void Work_AfterWS(uv_work_t* req, int status);
-    static void Work_AfterTags(uv_work_t* req, int status);
-#else
-    static void Work_AfterReadModel(uv_work_t* req);
-    static void Work_AfterWS(uv_work_t* req);
-    static void Work_AfterTags(uv_work_t* req);
-#endif
 };
 
 }
