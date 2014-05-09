@@ -1,6 +1,6 @@
 {
   "name": "kytea",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Node binding of KyTea",
   "homepage": "http://hideo55.github.com/node-kytea",
   "repository": "https://github.com/hideo55/node-kytea",
