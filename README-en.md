@@ -12,9 +12,10 @@ See [http://www.phontron.com/kytea/](http://www.phontron.com/kytea/).
 ```javascript
 var Kytea = require('kytea').Kytea;
 var path = '/path/to/model';
-var kt = new Kytea(path, { tagmax: 3 }, function(err){
+var kytea = new Kytea({ tagmax: 3 });
+var kytea.open(path, function(err) {
   if(err) throw err;
-  kt.getAllTags("これはテストです。", function(err,obj){
+  kytea.getAllTags("これはテストです。", function(err,obj){
     for(var i =0; i< obj.length;i++){
       var word = obj[i].surf;
       var pos = obj[i].tags[0];
@@ -26,11 +27,10 @@ var kt = new Kytea(path, { tagmax: 3 }, function(err){
 
 ## Methods
 	
-### new Kytea(modelPath, options, callback)
+### new Kytea(options)
 
-Load model that specified by `modelPath`, and create KyTea object.
+Create KyTea object.
 
-* `modelPath`: The path to model file.
 * `options`*(optional)*: Now, the following options are supported. 
   * `notag`: Skips a particular tag.(Default: \[\], \[1\] will skip the first tag)
   * `nounk`: Don't estimate the pronunciation of unkown words.(Default: false)
@@ -38,6 +38,13 @@ Load model that specified by `modelPath`, and create KyTea object.
   * `deftag`: A tag for words that cannot be given any tag.(for example, unknown words that contain a character not in the subword dictionary)(Default: 'UNK')
   * `unkbeam`: The width of the beam to use in beam search for unknown words.(Default: 50)
   * `unktag`: A tag to append to indicate words not in the dictionary.(Default: '')
+
+
+### open(modelPath, callback)
+
+Load the model that specified by the `modelPath`.
+
+* `modelPath`: The path to model file.
 * `callback`: The function called when reading of the model file is completed.
 
 ### getWS(text, callback)
@@ -100,13 +107,13 @@ kytea.getAllTags("これはテストです。", function(err, res){
 
 ## Requirement
 
-* Node >= v0.6.13
+* Node >= v0.8
 * KyTea >= 0.4.2
 
 node-kytea is verifying with KyTea 0.4.6. 
 Please download and install KyTea before installation. 
 
-## Install
+## Installation
 
 Please set a path to directory of Kytea's header and library files, and execute following commands.
 

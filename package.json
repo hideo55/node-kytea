@@ -5,9 +5,9 @@
   "homepage": "http://hideo55.github.com/node-kytea",
   "repository": "https://github.com/hideo55/node-kytea",
   "bugs": {
-  	"url": "https://github.com/hideo55/node-kytea/issues"
+    "url": "https://github.com/hideo55/node-kytea/issues"
   },
-  "keywords": ["Natural Language"],
+  "keywords": ["Natural Language", "Text analyzer", "Word segmentation"],
   "author": "Hideaki Ohno <hide.o.j55@gmail.com>",
   "dependencies": {
     "nan": "1.0.0"
@@ -16,9 +16,9 @@
     "mocha": "1.8.1"
   },
   "engines": {
-    "node": ">=0.6.13"
+    "node": ">=0.8.0"
   },
   "scripts": {
-  	"test" : "mocha -R spec test/test.js"
+    "test": "mocha -R spec test/test.js"
   }
 }

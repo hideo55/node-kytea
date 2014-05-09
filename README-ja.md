@@ -12,7 +12,8 @@ See [http://www.phontron.com/kytea/index-ja.html](http://www.phontron.com/kytea/
 ```javascript
 var Kytea = require('kytea').Kytea;
 var path = '/path/to/model';
-var kytea = new Kytea(path, { tagmax: 3 }, function(err){
+var kytea = new Kytea({ tagmax: 3 });
+var kytea.open(path, function(err) {
   if(err) throw err;
   kytea.getAllTags("これはテストです。", function(err,obj){
     for(var i =0; i< obj.length;i++){
@@ -26,11 +27,10 @@ var kytea = new Kytea(path, { tagmax: 3 }, function(err){
 
 ## Methods
 	
-### new Kytea(modelPath, options, callback)
+### new Kytea(options)
 
-`modelPath`で指定されたモデルを読み込み、KyTeaのオブジェクトを作成します。
+KyTeaのオブジェクトを作成します。
 
-* `modelPath`: モデルのファイルパス
 * `options`*(optional)*: 解析オプションです。現在、以下のオプションをサポートしています。
   * `notag`: n個目のタグを推定しない。(Default: \[\], \[1\]の場合は1番目のタグ推定がスキップされます)
   * `nounk`: 未知語の読み推定を行わない。(Default: false)
@@ -38,6 +38,12 @@ var kytea = new Kytea(path, { tagmax: 3 }, function(err){
   * `deftag`: サブワード辞書に存在しない未知語など、タグを与えられない単語のためのタグ.(Default: 'UNK')
   * `unkbeam`: 未知語の読み推定で利用するビーム幅。(Default: 50)
   * `unktag`: 辞書に存在しない単語に付与されるタグ。(Default: '')
+
+### open(modelPath, callback)
+
+`modelPath`で指定されたモデルを読み込みます。
+
+* `modelPath`: モデルのファイルパス
 * `callback`: モデルの読み込みが完了した時点でこの関数が呼ばれます。
 
 ### getWS(text, callback)

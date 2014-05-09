@@ -1,5 +1,11 @@
 # evision history for node-kytea
 
+0.2.0 / 2014-05-09
+==================
+
+  * [Incompatible change] Add API(open())
+  * Node v0.11 support
+
 0.1.7 / 2013-07-05
 ==================
 
