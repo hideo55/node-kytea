@@ -1,5 +1,10 @@
 # evision history for node-kytea
 
+0.2.1 / 2014-05-09
+==================
+
+  * Fixed document error
+
 0.2.0 / 2014-05-09
 ==================
 
