@@ -14,7 +14,7 @@ Persistent<FunctionTemplate> NodeKytea::constructor_template;
 void NodeKytea::Init(Handle<Object> exports) {
     NanScope();
     Local<FunctionTemplate> t = NanNew<v8::FunctionTemplate>(NodeKytea::New);
-    t->SetClassName(NanSymbol("Kytea"));
+    t->SetClassName(NanNew<String>("Kytea"));
     t->InstanceTemplate()->SetInternalFieldCount(1);
 
     NODE_SET_PROTOTYPE_METHOD(t, "open", NodeKytea::Open);
@@ -23,7 +23,7 @@ void NodeKytea::Init(Handle<Object> exports) {
     NODE_SET_PROTOTYPE_METHOD(t, "getAllTags", NodeKytea::getAllTags);
 
     NanAssignPersistent(constructor_template, t);
-    exports->Set(NanSymbol("Kytea"), t->GetFunction());
+    exports->Set(NanNew<String>("Kytea"), t->GetFunction());
 }
 
 NodeKytea::NodeKytea() :
