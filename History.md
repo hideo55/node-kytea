@@ -1,5 +1,10 @@
 # evision history for node-kytea
 
+0.2.2 / 2014-05-25
+==================
+
+  * Change version of nan(1.1.0)
+
 0.2.1 / 2014-05-09
 ==================
 
