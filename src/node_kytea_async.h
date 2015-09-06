@@ -6,9 +6,9 @@
 
 namespace node_kytea {
 
-class KyteaWorker : public NanAsyncWorker {
+class KyteaWorker : public Nan::AsyncWorker {
 public:
-    KyteaWorker(NanCallback* callback, NodeKytea* kytea);
+    KyteaWorker(Nan::Callback* callback, NodeKytea* kytea);
 
 protected:
     NodeKytea* kytea_;
@@ -16,7 +16,7 @@ protected:
 
 class OpenWorker : public KyteaWorker {
 public:
-    OpenWorker(NanCallback* callback, NodeKytea* kytea, std::string& filename);
+    OpenWorker(Nan::Callback* callback, NodeKytea* kytea, std::string& filename);
 
     /**
      * @brief Open model file
@@ -29,7 +29,7 @@ private:
 
 class WSWorker : public KyteaWorker {
 public:
-    WSWorker(NanCallback* callback, NodeKytea* kytea, std::string& text);
+    WSWorker(Nan::Callback* callback, NodeKytea* kytea, std::string& text);
 
     /**
      * @brief Execute word segmentation.
@@ -48,7 +48,7 @@ private:
 
 class TagWorker : public KyteaWorker {
 public:
-    TagWorker(NanCallback* callback, NodeKytea* kytea, std::string& text, bool all = false);
+    TagWorker(Nan::Callback* callback, NodeKytea* kytea, std::string& text, bool all = false);
 
     /**
      * @brief Execute particular tag.

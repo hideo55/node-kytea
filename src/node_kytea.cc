@@ -9,21 +9,21 @@ using namespace kytea;
 
 namespace node_kytea {
 
-Persistent<FunctionTemplate> NodeKytea::constructor_template;
+Nan::Persistent<FunctionTemplate> NodeKytea::constructor_template;
 
 void NodeKytea::Init(Handle<Object> exports) {
-    NanScope();
-    Local<FunctionTemplate> t = NanNew<v8::FunctionTemplate>(NodeKytea::New);
-    t->SetClassName(NanNew<String>("Kytea"));
+    Nan::HandleScope scope;
+    Local<FunctionTemplate> t = Nan::New<v8::FunctionTemplate>(NodeKytea::New);
+    constructor_template.Reset(t);
+    t->SetClassName(Nan::New<String>("Kytea").ToLocalChecked());
     t->InstanceTemplate()->SetInternalFieldCount(1);
 
-    NODE_SET_PROTOTYPE_METHOD(t, "open", NodeKytea::Open);
-    NODE_SET_PROTOTYPE_METHOD(t, "getWS", NodeKytea::getWS);
-    NODE_SET_PROTOTYPE_METHOD(t, "getTags", NodeKytea::getTags);
-    NODE_SET_PROTOTYPE_METHOD(t, "getAllTags", NodeKytea::getAllTags);
+    Nan::SetPrototypeMethod(t, "open", NodeKytea::Open);
+    Nan::SetPrototypeMethod(t, "getWS", NodeKytea::getWS);
+    Nan::SetPrototypeMethod(t, "getTags", NodeKytea::getTags);
+    Nan::SetPrototypeMethod(t, "getAllTags", NodeKytea::getAllTags);
 
-    NanAssignPersistent(constructor_template, t);
-    exports->Set(NanNew<String>("Kytea"), t->GetFunction());
+    exports->Set(Nan::New<String>("Kytea").ToLocalChecked(), t->GetFunction());
 }
 
 NodeKytea::NodeKytea() :
@@ -79,18 +79,18 @@ void NodeKytea::calculateTags(std::string& text, kytea::KyteaSentence::Words& wo
 }
 
 void NodeKytea::MakeWsResult(kytea::KyteaSentence::Words& words, Local<Array>& result) {
-    NanScope();
+    Nan::HandleScope scope;
     int word_num = words.size();
     StringUtil* util = kytea_->getStringUtil();
     for (int i = 0; i < word_num; i++) {
         kytea::KyteaWord& w = words[i];
         std::string surf = util->showString(w.surface);
-        result->Set(NanNew<Integer>(i), NanNew<String>(surf.c_str(), surf.size()));
+        result->Set(Nan::New<Integer>(i), Nan::New<String>(surf.c_str(), surf.size()).ToLocalChecked());
     }
 }
 
 void NodeKytea::MakeTagsResult(kytea::KyteaSentence::Words& words, Local<Array>& result, bool all) {
-    NanScope();
+    Nan::HandleScope scope;
 
     int word_num = words.size();
     StringUtil* util = kytea_->getStringUtil();
@@ -99,50 +99,50 @@ void NodeKytea::MakeTagsResult(kytea::KyteaSentence::Words& words, Local<Array>&
     for (int i = 0; i < word_num; i++) {
         kytea::KyteaWord& w = words[i];
         std::string surf = util->showString(w.surface);
-        Local<Object> elm = NanNew<Object>();
-        elm->Set(NanNew<String>("surf"), NanNew<String>(surf.c_str(), surf.size()));
+        Local<Object> elm = Nan::New<Object>();
+        elm->Set(Nan::New<String>("surf").ToLocalChecked(), Nan::New<String>(surf.c_str(), surf.size()).ToLocalChecked());
 
         int tags_size = w.getNumTags();
-        Local <Array> elm_tags = NanNew<Array>(tags_size);
+        Local <Array> elm_tags = Nan::New<Array>(tags_size);
 
         for (int j = 0; j < tags_size; j++) {
             if (config->getDoTag(j) == 0) {
-                elm_tags->Set(NanNew<Integer>(j), NanNew<Array>(0));
+                elm_tags->Set(Nan::New<Integer>(j), Nan::New<Array>(0));
             } else {
                 const std::vector<KyteaTag>& tags = w.getTags(j);
                 int tag_size = tags.size();
                 if (!all) {
                     tag_size = 1;
                 }
-                Local <Array> tag_set = NanNew<Array>(tag_size);
+                Local <Array> tag_set = Nan::New<Array>(tag_size);
                 for (int k = 0; k < tag_size; k++) {
-                    Local <Array> tag = NanNew<Array>(2);
+                    Local <Array> tag = Nan::New<Array>(2);
                     std::string tag_str = util->showString(tags[k].first);
-                    tag->Set(NanNew<Integer>(0), NanNew<String>(tag_str.c_str(), tag_str.size()));
-                    tag->Set(NanNew<Integer>(1), NanNew<Number>(tags[k].second));
-                    tag_set->Set(NanNew<Integer>(k), tag);
+                    tag->Set(Nan::New<Integer>(0), Nan::New<String>(tag_str.c_str(), tag_str.size()).ToLocalChecked());
+                    tag->Set(Nan::New<Integer>(1), Nan::New<Number>(tags[k].second));
+                    tag_set->Set(Nan::New<Integer>(k), tag);
                 }
-                elm_tags->Set(NanNew<Integer>(j), tag_set);
+                elm_tags->Set(Nan::New<Integer>(j), tag_set);
             }
         }
-        elm->Set(NanNew<String>("tags"), elm_tags);
-        result->Set(NanNew<Integer>(i), elm);
+        elm->Set(Nan::New<String>("tags").ToLocalChecked(), elm_tags);
+        result->Set(Nan::New<Integer>(i), elm);
     }
 }
 
 NAN_METHOD(NodeKytea::New) {
-    NanScope();
+    Nan::HandleScope scope;
 
     NodeKytea* obj = new NodeKytea();
-    obj->Wrap(args.Holder());
+    obj->Wrap(info.Holder());
     kytea::KyteaConfig* config = obj->kytea_->getConfig();
 
-    if (args.Length() == 1) {
+    if (info.Length() == 1) {
         REQ_OBJ_ARG(0);
-        Local<Object> opt = args[0].As<Object>();
+        Local<Object> opt = info[0].As<Object>();
         ParseConfig(opt, config);
-    } else if (args.Length() != 0) {
-        return NanThrowError("Too many arguments");
+    } else if (info.Length() != 0) {
+        return Nan::ThrowError("Too many arguments");
     }
 
     config->setOnTraining(false);
@@ -151,12 +151,12 @@ NAN_METHOD(NodeKytea::New) {
         config->setDoTag(i, true);
     }
 
-    NanReturnValue(args.Holder());
+    info.GetReturnValue().Set(info.Holder());
 }
 
 void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
-    NanScope();
-    if (opt->Get(NanNew<String>("debug"))->ToBoolean()->IsTrue()) {
+    Nan::HandleScope scope;
+    if (opt->Get(Nan::New<String>("debug").ToLocalChecked())->ToBoolean()->IsTrue()) {
         config->setDebug(1);
     }
     CHK_OPT_INT(config, setTagMax, opt, "tagmax");
@@ -164,93 +164,94 @@ void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
     CHK_OPT_BOOL(config, setDoUnk, opt, "nounk", true);
     CHK_OPT_INT(config, setUnkBeam, opt, "unkbeam");
     CHK_OPT_STR(config, setUnkTag, opt, "unktag");
+    Local<String> notag = Nan::New<String>("notag").ToLocalChecked();
 
-    if (opt->Has(NanNew<String>("notag"))) {
-        if (opt->Get(NanNew<String>("notag"))->IsArray()) {
-            Local <Array> notag = opt->Get(NanNew<String>("notag")).As<Array>();
+    if (opt->Has(notag)) {
+        if (opt->Get(notag)->IsArray()) {
+            Local <Array> notag = opt->Get(notag).As<Array>();
             for (unsigned int i = 0; i < notag->Length(); i++) {
-                if (notag->Get(NanNew<Integer>(i))->IsInt32()) {
+                if (notag->Get(Nan::New<Integer>(i))->IsInt32()) {
 
-                    unsigned int tag_index = notag->Get(NanNew<Integer>(i))->ToUint32()->Value();
+                    unsigned int tag_index = notag->Get(Nan::New<Integer>(i))->ToUint32()->Value();
                     if (tag_index < 1) {
-                        NanThrowTypeError("Illegal setting for \"notag\" (must be 1 or greater)");
+                        Nan::ThrowTypeError("Illegal setting for \"notag\" (must be 1 or greater)");
                     } else {
                         config->setDoTag(tag_index - 1, false);
                     }
                 } else {
-                    NanThrowTypeError("Option \"notag\" must be a array of integer");
+                    Nan::ThrowTypeError("Option \"notag\" must be a array of integer");
                 }
             }
         } else {
-            NanThrowTypeError("Option \"notag\" must be a array of integer");
+            Nan::ThrowTypeError("Option \"notag\" must be a array of integer");
         }
     }
 }
 
 NAN_METHOD(NodeKytea::Open) {
-    NanScope();
+    Nan::HandleScope scope;
 
     REQ_STR_ARG(0);
-    std::string filename = *String::Utf8Value(args[0]->ToString());
+    std::string filename = *String::Utf8Value(info[0]->ToString());
     REQ_FUN_ARG(1, cb);
 
-    NodeKytea* kt = Unwrap<NodeKytea>(args.Holder());
+    NodeKytea* kt = Unwrap<NodeKytea>(info.Holder());
 
-    NanCallback *callback = new NanCallback(cb);
-    NanAsyncQueueWorker(new OpenWorker(callback, kt, filename));
-    NanReturnUndefined();
+    Nan::Callback *callback = new Nan::Callback(cb);
+    Nan::AsyncQueueWorker(new OpenWorker(callback, kt, filename));
+    info.GetReturnValue().SetUndefined();
 }
 
 NAN_METHOD(NodeKytea::getWS) {
-    NanScope();
+    Nan::HandleScope scope;
 
     REQ_STR_ARG(0);
-    std::string sentence = *String::Utf8Value(args[0]->ToString());
+    std::string sentence = *String::Utf8Value(info[0]->ToString());
     REQ_FUN_ARG(1, cb);
 
-    NodeKytea* kt = Unwrap<NodeKytea>(args.Holder());
+    NodeKytea* kt = Unwrap<NodeKytea>(info.Holder());
 
-    NanCallback *callback = new NanCallback(cb);
-    NanAsyncQueueWorker(new WSWorker(callback, kt, sentence));
+    Nan::Callback *callback = new Nan::Callback(cb);
+    Nan::AsyncQueueWorker(new WSWorker(callback, kt, sentence));
 
-    NanReturnUndefined();
+    info.GetReturnValue().SetUndefined();
 }
 
 NAN_METHOD(NodeKytea::getTags) {
-    NanScope();
+    Nan::HandleScope scope;
 
     REQ_STR_ARG(0);
-    std::string sentence = *String::Utf8Value(args[0]->ToString());
+    std::string sentence = *String::Utf8Value(info[0]->ToString());
     REQ_FUN_ARG(1, cb);
 
-    NodeKytea* kt = Unwrap<NodeKytea>(args.Holder());
+    NodeKytea* kt = Unwrap<NodeKytea>(info.Holder());
 
-    NanCallback *callback = new NanCallback(cb);
-    NanAsyncQueueWorker(new TagWorker(callback, kt, sentence));
+    Nan::Callback *callback = new Nan::Callback(cb);
+    Nan::AsyncQueueWorker(new TagWorker(callback, kt, sentence));
 
-    NanReturnUndefined();
+    info.GetReturnValue().SetUndefined();
 }
 
 NAN_METHOD(NodeKytea::getAllTags) {
-    NanScope();
+    Nan::HandleScope scope;
 
     REQ_STR_ARG(0);
-    std::string sentence = *String::Utf8Value(args[0]->ToString());
+    std::string sentence = *String::Utf8Value(info[0]->ToString());
     REQ_FUN_ARG(1, cb);
 
-    NodeKytea* kt = Unwrap<NodeKytea>(args.Holder());
+    NodeKytea* kt = Unwrap<NodeKytea>(info.Holder());
 
-    NanCallback *callback = new NanCallback(cb);
-    NanAsyncQueueWorker(new TagWorker(callback, kt, sentence, true));
+    Nan::Callback *callback = new Nan::Callback(cb);
+    Nan::AsyncQueueWorker(new TagWorker(callback, kt, sentence, true));
 
-    NanReturnUndefined();
+    info.GetReturnValue().SetUndefined();
 }
 
 }
 
 namespace {
 void Initialize(v8::Handle<v8::Object> exports) {
-    NanScope();
+    Nan::HandleScope scope;
     node_kytea::NodeKytea::Init(exports);
 }
 }

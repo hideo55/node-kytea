@@ -3,7 +3,7 @@
     {
       'target_name': 'kytea',
       'sources': ['src/node_kytea.cc', 'src/node_kytea_async.cc'],
-      'include_dirs': ["<!(node -e \"require('nan')\")", "<!(pkg-config --cflags kytea)"],
+      'include_dirs': ["<!(node -e \"require('nan')\")", "<!(pkg-config --cflags-only-I kytea | sed s/-I//g)"],
       'cflags': ['-fexceptions'],
       'cflags_cc': ['-fexceptions'],
       'cflags!': ['-fno-exceptions', '-fno-rtti'],

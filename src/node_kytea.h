@@ -4,7 +4,7 @@
 #define BUILDING_NODE_EXTENSION
 #endif
 
-#include "nan.h"
+#include <nan.h>
 #include <string>
 #include <vector>
 #include <kytea/kytea-model.h>
@@ -38,7 +38,7 @@ public:
     void MakeTagsResult(kytea::KyteaSentence::Words& words, v8::Local<v8::Array>& result, bool all);
 
 private:
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
+    static Nan::Persistent<v8::FunctionTemplate> constructor_template;
     kytea::Kytea* kytea_;
     bool isModelLoaded_;
 
