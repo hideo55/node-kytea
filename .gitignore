@@ -3,3 +3,4 @@ build
 /.lock-wscript
 /.project
 node_modules/
+npm-debug.log
