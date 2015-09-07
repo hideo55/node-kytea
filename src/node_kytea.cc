@@ -164,11 +164,11 @@ void NodeKytea::ParseConfig(Handle<Object> opt, KyteaConfig *config) {
     CHK_OPT_BOOL(config, setDoUnk, opt, "nounk", true);
     CHK_OPT_INT(config, setUnkBeam, opt, "unkbeam");
     CHK_OPT_STR(config, setUnkTag, opt, "unktag");
-    Local<String> notag = Nan::New<String>("notag").ToLocalChecked();
+    Local<String> notagKey = Nan::New<String>("notag").ToLocalChecked();
 
-    if (opt->Has(notag)) {
-        if (opt->Get(notag)->IsArray()) {
-            Local <Array> notag = opt->Get(notag).As<Array>();
+    if (opt->Has(notagKey)) {
+        if (opt->Get(notagKey)->IsArray()) {
+            Local <Array> notag = opt->Get(notagKey).As<Array>();
             for (unsigned int i = 0; i < notag->Length(); i++) {
                 if (notag->Get(Nan::New<Integer>(i))->IsInt32()) {
 
