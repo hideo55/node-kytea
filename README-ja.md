@@ -107,15 +107,15 @@ kytea.getAllTags("これはテストです。", function(err, res){
 
 ## Requirement
 
-* Node >= v0.6.13
+* Node >= v0.8
 * KyTea >= 0.4.2
 
-最新の node-kytea は KyTea 0.4.6 での動作を確認しています。
+最新の node-kytea は KyTea 0.4.7 での動作を確認しています。
 インストールの前に、[こちら](http://www.phontron.com/kytea/index-ja.html)から KyTea をダウンロードして、インストールしてください。
 
 ## Install
 
-KyTea のヘッダ及びライブラのパスがインクルードパス、ライブラリパスに含まれるようにしたうえで、以下のコマンドを実行してください。
+KyTea のヘッダ及びライブラのパスを取得する際に`pkg-config`を使用するので、`kytea.pc`があるディレクトリパスを環境変数`PKG_CONFIG_PATH`に追加し、以下のコマンドを実行してください。
 
 ```shell
 npm install kytea
