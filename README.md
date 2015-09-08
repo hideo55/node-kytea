@@ -115,7 +115,7 @@ Please download and install KyTea before installation.
 
 ## Installation
 
-Please set a path to directory of Kytea's header and library files, and execute following commands.
+Set(or add) path of `kytea.pc` to the environment variable `PKG_CONFIG_PATH`, and execute following commands.
 
 ```shell
 npm install kytea
