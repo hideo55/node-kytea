@@ -1,5 +1,11 @@
 # evision history for node-kytea
 
+0.3.0 / 2015-09-09
+==================
+
+  * Change version of nan(2.0.5)
+    - Support io.js and node v4
+
 0.2.2 / 2014-05-25
 ==================
 
