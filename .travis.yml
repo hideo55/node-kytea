@@ -2,8 +2,10 @@ language: "node_js"
 node_js:
   - "0.10"
   - "0.12"
-ddons:
+addons:
   apt:
+    sources:
+      - vbkaisetsu
     packages:
       - kytea
 sudo: false
