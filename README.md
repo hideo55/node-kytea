@@ -109,7 +109,7 @@ kytea.getAllTags("これはテストです。", function(err, res){
 
 ## Requirement
 
-* Node >= v0.8
+* 8.11 >= Node >= v0.8
 * KyTea >= 0.4.2
 
 node-kytea is verifying with KyTea 0.4.6. 

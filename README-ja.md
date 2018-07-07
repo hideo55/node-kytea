@@ -107,7 +107,7 @@ kytea.getAllTags("これはテストです。", function(err, res){
 
 ## Requirement
 
-* Node >= v0.8
+* 8.11 >= Node >= v0.8
 * KyTea >= 0.4.2
 
 最新の node-kytea は KyTea 0.4.7 での動作を確認しています。
