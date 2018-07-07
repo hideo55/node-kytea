@@ -3,6 +3,7 @@ node_js:
   - "0.10"
   - "0.12"
   - "4.0"
+  - "9.11"
 before_install:
   - sudo add-apt-repository -y ppa:vbkaisetsu/ppa
   - sudo apt-get update -qq
