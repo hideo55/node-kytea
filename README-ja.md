@@ -13,7 +13,7 @@ See [http://www.phontron.com/kytea/index-ja.html](http://www.phontron.com/kytea/
 var Kytea = require('kytea').Kytea;
 var path = '/path/to/model';
 var kytea = new Kytea({ tagmax: 3 });
-var kytea.open(path, function(err) {
+kytea.open(path, function(err) {
   if(err) throw err;
   kytea.getAllTags("これはテストです。", function(err,obj){
     for(var i =0; i< obj.length;i++){
